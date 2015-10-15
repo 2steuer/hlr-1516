@@ -5,7 +5,12 @@
 //E -> 0010
 //S -> 0100
 //W -> 1000
-typedef enum {N = 1, E = 2, S = 4, W = 8} cardd;
+typedef enum {
+	N = 1, 
+	E = 2, 
+	S = 4, 
+	W = 8
+} cardd;
 
 //array 3x3
 int map[3][3];
