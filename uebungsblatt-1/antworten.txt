@@ -1,1 +1,7 @@
-todo
+Frage 1:
+Es gibt keine manpage für 'cd', da es bestandteil des Konsolenprogramms (in unserem Fall 'bash') ist, und somit nicht als eigenständige ausführbare Datei oder Paket für das Betriebssystem vorliegt.
+
+Frage 2: Da 'tar' von sich aus nicht komprimiert, ist der erzeugte tarball nicht kleiner als die ursprüngliche Datei - er ist sogar größer, da Headerdaten und Dateiverzeichnisse nun noch zusätzlich in der Datei gespeichert werden müssen. Der Unterschied beträgt etwa 2kb zur nicht-gepackten Datei.
+
+Frage 3: Ja, es ist möglich, mit 'tar' direkt ein Gzip-komprimiertes Archiv zu erstellen. Der Befehl lautet:
+# tar -czf archiv.tar.gz datei1 datei2 datei3 
