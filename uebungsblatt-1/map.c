@@ -21,7 +21,7 @@ int map[3][3];
 // Überprüfen Sie außerdem dir auf Gültigkeit
 void set_dir (int x, int y, cardd dir)
 {
-	if ((x >= 0 && x <= 2)||(y >= 0 && y <= 2))
+	if ((x >= 0 && x <= 2)&&(y >= 0 && y <= 2))
 	{
 		map[x][y] = dir;
 	}
