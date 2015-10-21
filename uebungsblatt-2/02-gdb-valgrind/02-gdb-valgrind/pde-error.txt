@@ -1,0 +1,93 @@
+1. 
+
+Zeile 65
+
+In der Console werden die Interlines abgefragt und gezeigt wie sie verwendet werden. (N = interlines * 8 + 9) 
+Im Code steht aber: 
+
+  N = interlines * 8 + 9 - 1; 	
+
+Die "-1" ist hier nicht richtig.
+
+-----------------------------------------------------------------------
+2.
+
+Zeile 230
+
+  - Matrix[j - 1][m2][i] + 4 * Matrix[m2][i][j] -
+
+Hier wurde offensichtlig "j-1" und "m2" vertauscht, richtig ist:
+
+  - Matrix[m2][j - 1][i] + 4 * Matrix[m2][i][j] -
+  
+------------------------------------------------------------------------
+3.
+
+memcheck:
+
+==5496== Invalid write of size 8
+==5496==    at 0x400D38: initMatrices (partdiff-seq.c:133)
+==5496==    by 0x4016F2: main (partdiff-seq.c:310)
+==5496==  Address 0x55049b0 is 0 bytes after a block of size 9,984 alloc'd
+==5496==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5496==    by 0x400BF5: allocateMatrices (partdiff-seq.c:96)
+==5496==    by 0x4016ED: main (partdiff-seq.c:309)
+
+Zeile 96:
+
+   M = malloc (sizeof (double) * (N + 1) * (N - 1) * 2);	
+   
+Hier wird nicht genügend Speicher allokiert, richtig ist:
+
+   M = malloc (sizeof (double) * (N + 1) * (N + 1) * 2);	
+
+
+------------------------------------------------------------------------
+4.
+
+
+==5681== Invalid read of size 8
+==5681==    at 0x401085: freeMatrices (partdiff-seq.c:166)
+==5681==    by 0x401753: main (partdiff-seq.c:319)
+==5681==  Address 0x5502048 is 8 bytes inside a block of size 16 free'd
+==5681==    at 0x4C2BDEC: free (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5681==    by 0x401079: freeMatrices (partdiff-seq.c:165)
+==5681==    by 0x401753: main (partdiff-seq.c:319)
+
+
+Zeile 165:
+
+Matrix zeigt auf die Pointer Matrix[0] und Matrix[1], daher sollten letztere zuerst deallokiert werden.
+
+  if (Matrix[1] != 0)
+    free (Matrix[1]);
+  if (Matrix[0] != 0)
+    free (Matrix[0]);
+  free (Matrix);
+
+------------------------------------------------------------------------
+5.
+
+==5695== HEAP SUMMARY:
+==5695==     in use at exit: 5,184 bytes in 1 blocks
+==5695==   total heap usage: 5 allocs, 4 frees, 6,056 bytes allocated
+
+==5695== LEAK SUMMARY:
+==5695==    definitely lost: 0 bytes in 0 blocks
+==5695==    indirectly lost: 0 bytes in 0 blocks
+==5695==      possibly lost: 0 bytes in 0 blocks
+==5695==    still reachable: 5,184 bytes in 1 blocks
+==5695==         suppressed: 0 bytes in 0 blocks
+==5695== Reachable blocks (those to which a pointer was found) are not shown.
+
+Es wurde fünfmal allokiert, aber nur 4 mal deallokiert.
+
+
+Zeile 163:
+
+Hier fehlt noch:
+
+  if(M != 0)
+    free (M);
+    
+ in der Funktion void freeMatrices(void)

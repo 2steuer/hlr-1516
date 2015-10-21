@@ -1,0 +1,132 @@
+---------
+mistake1:
+---------
+
+Zeile 12:
+mistake1 gibt ein lokales Array zurück, wir brauchen aber ein Zeiger auf ein
+allokiertes Array, damit die Funktion main den richtigen Wert erhält.
+Also erzeugen wir einen neuen Zeiger *p_buf und kopieren an seine Adresse
+das Array buf:
+
+  int buf[] = { 1, 1, 2, 3, 4, 5 };
+  int *p_buf = malloc (sizeof (int) * 6);
+  memcpy(p_buf, buf, 6);
+  return p_buf;
+  
+Allerdings gibt uns valgrind dann:
+
+==5209== Conditional jump or move depends on uninitialised value(s)
+==5209==    at 0x4E80A55: _itoa_word (_itoa.c:179)
+==5209==    by 0x4E846F6: vfprintf (vfprintf.c:1660)
+==5209==    by 0x4E8B498: printf (printf.c:33)
+==5209==    by 0x400768: main (simple.c:51)
+==5209==  Uninitialised value was created by a heap allocation
+==5209==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5209==    by 0x400647: mistake1 (simple.c:13)
+==5209==    by 0x40071B: main (simple.c:49)
+
+Daher müssen wir den Speicher noch initalisieren:
+
+  int *p_buf = calloc (6, sizeof (int));
+
+  
+________________________________________________________________________
+---------
+mistake2:
+---------
+
+Zeile 19:
+Es wird Speicher für 4 * sizeof(char) allokiert, int *buf zeigt aber auf ein Integer Array, von dem wir 
+ausschließlich die zweite Stelle nutzen. Daher allokieren wir nur für zwei Integer:
+
+  (sizeof (int) * 2);
+  
+Zeile 20:  
+Außerdem wird der Wert 2 an der falschen Stelle gespeichert, da int *p[4] in 
+der main Funktion auf &mistake2()[1], also den zweiten Wert im Array zugreift.
+
+  buf[1] = 2;
+
+________________________________________________________________________
+---------
+mistake3:
+---------
+
+Zeile 27:
+Die beiden Zeilen enthalten ungünstige und verschiedene Variablennamen,
+außerdem wird der Speicher nicht allokiert:
+
+  int mistake2_ = 0;
+  int *buf = (int *) &mistake2;
+  
+Also ersetzen wir diese einfach durch 
+
+  int *buf = malloc (sizeof (int)); 
+
+________________________________________________________________________
+---------
+mistake4:
+---------
+
+Zeile 36:
+Auch hier wollen wir den richtigen Speicher für ein Integer Array allokieren_
+
+  (sizeof (int) * 4);
+
+Zeile 38:
+Zusätzlich wird der Speicher von buf deallokiert, bevor buf zurückgegeben wird.
+Also haben wir folgende zeile gelöscht:
+
+- free (buf); 
+
+________________________________________________________________________
+---------
+main:
+---------
+
+
+memcheck gibt folgendes aus:
+
+==5143== HEAP SUMMARY:
+==5143==     in use at exit: 52 bytes in 4 blocks
+==5143==   total heap usage: 4 allocs, 1 frees, 52 bytes allocated
+==5143== 
+==5143== 4 bytes in 1 blocks are definitely lost in loss record 1 of 4
+==5143==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5143==    by 0x4006CF: mistake3 (simple.c:30)
+==5143==    by 0x40073F: main (simple.c:48)
+==5143== 
+==5143== 8 bytes in 1 blocks are definitely lost in loss record 2 of 4
+==5143==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5143==    by 0x4006A5: mistake2 (simple.c:22)
+==5143==    by 0x40072D: main (simple.c:48)
+==5143== 
+==5143== 16 bytes in 1 blocks are definitely lost in loss record 3 of 4
+==5143==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5143==    by 0x4006F5: mistake4 (simple.c:38)
+==5143==    by 0x40074D: main (simple.c:48)
+==5143== 
+==5143== 24 bytes in 1 blocks are definitely lost in loss record 4 of 4
+==5143==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5143==    by 0x400671: mistake1 (simple.c:14)
+==5143==    by 0x40071B: main (simple.c:48)
+==5143== 
+==5143== LEAK SUMMARY:
+==5143==    definitely lost: 52 bytes in 4 blocks
+==5143==    indirectly lost: 0 bytes in 0 blocks
+==5143==      possibly lost: 0 bytes in 0 blocks
+==5143==    still reachable: 0 bytes in 0 blocks
+==5143==         suppressed: 0 bytes in 0 blocks
+
+
+Zeile 55:
+Wir müssen also für alle vier Funktionen noch den Speicher deallokieren.
+Da *p[0] und *p[1] jeweils auf den zweiten Wert im Array zeigen, müssen wir hier 1 abziehen, also haben wir:
+
+  free (p[0]-1);		
+  free (p[1]-1);
+  free (p[2]);
+  free (p[3]);
+
+
+

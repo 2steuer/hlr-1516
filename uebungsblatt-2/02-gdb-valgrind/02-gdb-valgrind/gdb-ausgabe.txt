@@ -1,0 +1,79 @@
+1.
+(gdb) break mistake1
+Haltepunkt 1 at 0x4005ca: file simple.c, line 12.
+
+(gdb) run
+Starting program: .../simple 
+
+Breakpoint 1, mistake1 () at simple.c:12
+12	  int buf[] = { 1, 1, 2, 3, 4, 5 };
+
+(gdb) p buf
+$1 = {-134225464, 32767, 0, 0, 1, 0}
+
+(gdb) p buf[2]
+$2 = 0
+
+(gdb) n
+13	  return buf;
+
+(gdb) p buf
+$3 = {1, 1, 2, 3, 4, 5}
+
+(gdb) p buf[2]
+$4 = 2
+
+(gdb) ptype buf
+type = int [6]
+
+-> buf ist also ein int-Array der Länge 6.
+
+
+2.
+(gdb) break mistake2
+Haltepunkt 2 at 0x400602: file simple.c, line 19.
+(gdb) c
+Continuing.
+
+Breakpoint 2, mistake2 () at simple.c:19
+19	  int *buf = malloc (sizeof (char) * 4);
+(gdb) ptype buf
+type = int *
+
+-> buf ist hier also ein Zeiger auf ein Integer.
+
+3.
+(gdb) c
+Continuing.
+
+Program received signal SIGSEGV, Segmentation fault.
+0x000000000040063b in mistake3 () at simple.c:29
+29	  buf[0] = 3;
+(gdb) list
+24	int *
+25	mistake3 ()
+26	{
+27	  int mistake2_ = 0;
+28	  int *buf = (int *) &mistake2;
+29	  buf[0] = 3;
+30	  return buf;
+31	}
+32	
+33	int *
+
+(gdb) bt
+#0  0x000000000040063b in mistake3 () at simple.c:29
+#1  0x00000000004006b3 in main () at simple.c:46
+
+(gdb) frame 1
+#1  0x00000000004006b3 in main () at simple.c:46
+46	  int *p[4] = { &mistake1 ()[1], &mistake2 ()[1], mistake3 (), mistake4 () };
+
+(gdb) p p
+$5 = {0x7fffffffde44, 0x602014, 0x7fffffffdf70, 0x0}
+
+
+4.
+(gdb) call mistake4
+$6 = {int *()} 0x400647 <mistake4>
+

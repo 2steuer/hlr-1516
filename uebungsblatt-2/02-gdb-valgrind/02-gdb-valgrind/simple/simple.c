@@ -5,27 +5,29 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int *
 mistake1 ()
 {
+  int *p_buf = calloc (6, sizeof (int));
   int buf[] = { 1, 1, 2, 3, 4, 5 };
-  return buf;
+  memcpy(p_buf, buf, 6);
+  return p_buf;
 }
 
 int *
 mistake2 ()
 {
-  int *buf = malloc (sizeof (char) * 4);
-  buf[2] = 2;
+  int *buf = malloc (sizeof (int) * 2);
+  buf[1] = 2;
   return buf;
 }
 
 int *
 mistake3 ()
 {
-  int mistake2_ = 0;
-  int *buf = (int *) &mistake2;
+  int *buf = malloc (sizeof (int)); 
   buf[0] = 3;
   return buf;
 }
@@ -33,9 +35,9 @@ mistake3 ()
 int *
 mistake4 ()
 {
-  int *buf = malloc (sizeof (char) * 4);
-  buf[4] = 4;
-  free (buf);
+  int *buf = malloc (sizeof (int) * 4);
+  buf[0] = 4;
+  /* free (buf); */
   return buf;
 }
 
@@ -52,7 +54,10 @@ main (void)
 
   /* mhh muss hier noch etwas gefreed werden? */
   /* Fügen sie hier die korrekten aufrufe von free() ein */
-  free (p[1]);			/* welcher Pointer war das doch gleich?, TODO: Fixme... :-) */
-
+  free (p[0]-1);			/* welcher Pointer war das doch gleich?, TODO: Fixme... :-) */
+  free (p[1]-1);
+  free (p[2]);
+  free (p[3]);
+  
   return 0;
 }
