@@ -1,5 +1,19 @@
 Aufgabe 1:
 ----------
+1. Batch-Queuing beschreibt das hintereinander Ausführen von so genannten "Jobs" und dient zur gleichmäßigen, gerechten Verteilung von Rechenzeit auf viele verschiedene Benutzer. Ein Batch-Queuing-System ermöglicht das Einreihen (Absenden) eines Jobs, das überwachen des Status dieses Jobs, es sucht den am besten geeigneten Cluster-Node für den Job aus (abhängig bspw. von der aktuellen Last), vergibt Prioritäten und kümmert sich darum, dass die Ausgaben der einzelnen Tasks wieder zum Auftraggeber zurück gereicht werden.
+
+2. Moab, Argent Job Scheduler, Univa Grid Engine, Portable Batch System, Simple Linux Utility for Resource Management (SLURM)
+
+3. -
+
+4. Es wird SLURM verwendet.
+
+5. smap
+
+6. Man hat über eine grafische Benutzeroberfläche direkt Zugriff auf alle Funktionen und Aktionen bezüglich abgegebener Jobs. Es entfällt bspw. das Fehlerbehaftete heraussuchen-und-abtippen von Job-IDs.
+
+7. Ja, scancel <jobid>
+
 
 
 Aufgabe 2:
