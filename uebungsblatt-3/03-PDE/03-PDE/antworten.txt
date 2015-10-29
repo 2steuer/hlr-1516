@@ -1,0 +1,9 @@
+Aufgabe 1:
+----------
+
+
+Aufgabe 2:
+----------
+Es fällt auf, dass die Ausgaben der einzelnen Nodes im Cluster nicht sequentiell passieren, sondern durchaus auch eine später zustande gekommene Ausgabe früher als eine andere in der Datei steht. Dies wird damit zusammenhängen, dass die Übertragung der Ausgaben zurück zur Haupt-Node auch Zeit braucht und mit Latenzen verbunden ist.
+
+Man könnte timescript.out nicht innerhalb des timescripts erstellen, da diese nicht auf dem Rechner ausgeführt werden, wo die Datei erstellt werden soll, sondern auf einzelnen Knotenrechnern.
