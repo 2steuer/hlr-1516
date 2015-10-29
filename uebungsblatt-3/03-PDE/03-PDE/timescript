@@ -1,0 +1,4 @@
+#!/bin/bash
+DATETIME=$(date +"%d.%m.%Y %H:%M:%S.%N")
+
+echo "$(hostname): ${DATETIME}" 
