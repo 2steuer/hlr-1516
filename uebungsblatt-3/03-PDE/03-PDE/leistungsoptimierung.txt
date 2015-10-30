@@ -1,0 +1,258 @@
+Wir haben die Laufzeiten nicht auf dem Cluster gemessen, 
+da diese dort extrem geschwankt haben.
+
+------------------------------------------------------------------------
+
+Ohne Optimierung:
+
+ time ./partdiff-seq 1 2 128 1 2 1024
+
+
+Berechnungszeit:    38.060524 s 
+Berechnungsmethode: Jacobi
+Interlines:         128
+Stoerfunktion:      f(x,y)=0
+Terminierung:       Anzahl der Iterationen
+Anzahl Iterationen: 1024
+Norm des Fehlers:   3.394481e-04
+
+real	0m38.076s
+user	0m38.026s
+sys		0m0.000s
+
+------------------------------------------------------------------------
+
+mit Optimierungsstufe 1 (-O1)
+
+
+real	0m10.757s
+user	0m10.742s
+sys		0m0.004s
+
+------------------------------------------------------------------------
+
+mit Optimierungsstufe 2 (-O2)
+
+real	0m10.638s
+user	0m10.604s
+sys		0m0.008s
+
+Hier ist kein wirklicher Zeitgewinn enstanden.
+
+------------------------------------------------------------------------
+
+mit Optimierungsstufe 3 (-O3)
+
+
+real	0m6.875s
+user	0m6.860s
+sys		0m0.008s
+
+------------------------------------------------------------------------
+
+gprof ./partdiff-seq
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 91.76     35.62    35.62        1    35.62    38.29  calculate
+  6.87     38.29     2.67 1088472064     0.00     0.00  getResiduum
+  1.50     38.87     0.58        1     0.58     0.58  initMatrices
+  0.00     38.87     0.00        4     0.00     0.00  allocateMemory
+  0.00     38.87     0.00        1     0.00     0.00  AskParams
+  0.00     38.87     0.00        1     0.00     0.00  DisplayMatrix
+  0.00     38.87     0.00        1     0.00     0.00  allocateMatrices
+  0.00     38.87     0.00        1     0.00     0.00  displayStatistics
+  0.00     38.87     0.00        1     0.00     0.00  freeMatrices
+  0.00     38.87     0.00        1     0.00     0.00  initVariables
+  
+  
+ Die meiste Zeit braucht also die Funktion calculate(), diese muss mit 
+ Prioriät betrachtet werden.
+ Auch getResiduum macht noch einen bemerkbaren Teil der Laufzeit aus und
+ wird zudem 1088472064 mal aufgerufen.
+ 
+ 
+------------------------------------------------------------------------
+  
+ perf stats
+  
+Performance counter stats for './partdiff-seq 1 2 128 1 2 1024':
+
+  38383,882514 task-clock (msec)         #    0,999 CPUs utilized          
+		 3.493 context-switches          #    0,091 K/sec                  
+			20 cpu-migrations            #    0,001 K/sec                  
+		   793 page-faults               #    0,021 K/sec                  
+97.781.891.976 cycles                    #    2,547 GHz                     
+192.762.822.439 instructions             #    1,97  insns per cycle        
+ 8.721.809.588 branches                  #    227,226 M/sec                  
+	 1.387.728 branch-misses             #    0,02% of all branches        
+
+  38,433175722 seconds time elapsed
+
+
+context-switches
+	
+	Die Zahl der Kontexwechsel ist ziemlich hoch, wir müssen also genauer 
+	auf die Zugriffsreihenfolge achten.
+
+cpu-migrations	
+
+	Zahl der CPU Wechsel
+	
+page-faults
+	
+	Seitenfehler
+
+branches/branch-misses
+	
+	Sprünge und Schleifen im Code, wobei branch-misses nicht vorhergesagte 
+	branches sind
+
+
+
+------------------------------------------------------------------------
+Zeile 227
+
+
+Wir haben  unsere Datenstruktur als Matrix angelegt und im Speicher liegen 
+die Einträge einer Zeile nebeneinander.
+Hier wird aber erst über die Spalten, dann über die Zeilen iteriert.
+Dadurch muss für jede Iteration eine neue Cacheline geladen werden.
+Wenn wir hier Spalten und Zeilen vertauschen, werden mehrere logisch nebeneinader liegende
+Elemente in eine Cacheline geladen, wodurch Zeit gespart wird.
+
+		/* over all rows */
+		for (j = 1; j < N; j++)
+		{
+			/* over all columns */
+			for (i = 1; i < N; i++)
+
+
+Korrigiert:
+
+		/* over all columns */
+		for (i = 1; i < N; i++)
+		{
+			/* over all rows */
+			for (j = 1; j < N; j++)
+			
+			
+real	0m28.843s
+user	0m28.809s
+sys		0m0.008s
+
+Also eine Verbesserung um ca. 30%
+
+------------------------------------------------------------------------	
+Zeile 233 
+
+Hier ist es ähnlich wie oben.
+Die Elemente Matrix[m2][i][x] liegen für x = j-1, j, j+1 hintereinander im Speicher,
+also sollten wir diese auch in dieser Reihenfolge aufrufen.
+
+
+	star = -Matrix[m2][i-1][j] - Matrix[m2][i][j-1] + 4.0 * Matrix[m2][i][j] - Matrix[m2][i][j+1] - Matrix[m2][i+1][j] ;
+	
+		
+real	0m27.381s
+user	0m27.353s
+sys	0m0.004s
+
+
+Also ein bisschen mehr als eine Sekunde Zeitgewinn
+------------------------------------------------------------------------
+
+Zeile 205
+
+	double *star = malloc(sizeof(double)); 
+	+ Anpassungen
+	
+Beim Aufruf von getResiduum jedes mal den Wert von star auf den Stack zu kopieren und
+zu ändern ist aufwändiger, als einen Pointer auf star zu übergeben.
+
+real	0m26.283s
+user	0m26.258s
+sys	0m0.000s
+
+Also ca. eine Sekunde Zeitgewinn
+
+------------------------------------------------------------------------
+
+Zeile 235
+
+	korrektur = getResiduum(arguments, options, i, j, star);
+	//korrektur = residuum;
+	residuum = (korrektur < 0) ? -(korrektur) : korrektur;
+	
+Die Zuweisung korrektur = residuum ist nicht notwendig, man kann 
+direkt korrektur nutzen und unten residuum ersetzen.
+
+real	0m25.404s
+user	0m25.366s
+sys	0m0.008s
+
+Also ca. eine Sekunde Zeitgewinn
+
+
+------------------------------------------------------------------------
+
+
+Zeile 127
+
+	vorher: arguments->Matrix[i][j] = (double*)(arguments->M +(i * (N + 1) * (N + 1)) + (j * (N + 1)));
+	
+	nacher:	arguments->Matrix[i][j] = (double*)(arguments->M + (i * (N + 1) + j) * (N + 1));
+	
+Also i*j Multiplikationen gespart.
+	
+-> aber kein merkbarer Unterschied
+
+real	0m25.398s
+user	0m25.336s
+sys	0m0.012s
+
+
+Wir haben jetzt durch die Änderungen also ca. 35% der Laufzeit eingespart
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+Zusätzlich:
+
+Zeile 197
+
+	return ((TWO_PI_SQUARE * sin((double)(y) * arguments->h_pi) * sin((double)(x) * arguments->h_pi) * arguments->h_square - *star) / 4.0);
+
+Wird zwar im Testaufruf nicht benutzt, aber bei jedem Aufruf von getResiduum() 
+zweimal h*pi und einmal h*h neu zu berechnen ist nicht notwendig.
+
+------------------------------------------------------------------------
+
+nun ein erneuter Lauf mit -O1
+
+real	0m7.484s
+user	0m7.464s
+sys	0m0.000s
+
+------------------------------------------------------------------------
+
+mit -O2
+
+real	0m5.253s
+user	0m5.226s
+sys	0m0.015s
+
+
+------------------------------------------------------------------------
+
+ mit -O3
+
+real	0m3.450s
+user	0m3.439s
+sys	0m0.008s
+
+
+Ohne unsere Anpassungen waren es ~6,8 Sekunden,
+also ergibt sich sogar eine Optimierung von ca 50%!
+

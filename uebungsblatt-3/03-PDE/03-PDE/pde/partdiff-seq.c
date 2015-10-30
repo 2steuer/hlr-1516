@@ -31,7 +31,10 @@ struct calculation_arguments
 	int     num_matrices;   /* number of matrices                             */
 	double  ***Matrix;      /* index matrix used for addressing M             */
 	double  *M;             /* two matrices with real values                  */
-	double  h;              /* length of a space between two lines            */
+	double  h;             /* length of a space between two lines            */
+	double 	h_square;
+	double 	h_pi;
+	
 };
 
 struct calculation_results
@@ -60,6 +63,8 @@ initVariables (struct calculation_arguments* arguments, struct calculation_resul
 	arguments->N = options->interlines * 8 + 9 - 1;
 	arguments->num_matrices = (options->method == METH_JACOBI) ? 2 : 1;
 	arguments->h = (float)( ( (float)(1) ) / (arguments->N));
+	arguments->h_square = arguments->h * arguments->h;
+	arguments->h_pi = arguments->h * PI;
 
 	results->m = 0;
 	results->stat_iteration = 0;
@@ -124,7 +129,7 @@ allocateMatrices (struct calculation_arguments* arguments)
 
 		for (j = 0; j <= N; j++)
 		{
-			arguments->Matrix[i][j] = (double*)(arguments->M + (i * (N + 1) * (N + 1)) + (j * (N + 1)));
+			arguments->Matrix[i][j] = (double*)(arguments->M + (i * (N + 1) + j) * (N + 1));
 		}
 	}
 }
@@ -180,16 +185,16 @@ initMatrices (struct calculation_arguments* arguments, struct options* options)
 /* getResiduum: calculates residuum                                         */
 /* Input: x,y - actual column and row                                       */
 /* ************************************************************************ */
-double
-getResiduum (struct calculation_arguments* arguments, struct options* options, int x, int y, double star)
+double 
+getResiduum (struct calculation_arguments* arguments, struct options* options, int x, int y, double* star)
 {
 	if (options->inf_func == FUNC_F0)
 	{
-		return ((-star) / 4.0);
+		return ((-(*star)) / 4.0);
 	}
 	else
 	{
-		return ((TWO_PI_SQUARE * sin((double)(y) * PI * arguments->h) * sin((double)(x) * PI * arguments->h) * arguments->h * arguments->h - star) / 4.0);
+		return ((TWO_PI_SQUARE * sin((double)(y) * arguments->h_pi) * sin((double)(x) * arguments->h_pi) * arguments->h_square - *star) / 4.0);
 	}
 }
 
@@ -202,10 +207,10 @@ calculate (struct calculation_arguments* arguments, struct calculation_results *
 {
 	int i, j;                                   /* local variables for loops  */
 	int m1, m2;                                 /* used as indices for old and new matrices       */
-	double star;                                /* four times center value minus 4 neigh.b values */
+	double *star = malloc(sizeof(double));      /* four times center value minus 4 neigh.b values */
 	double korrektur;
 	double residuum;                            /* residuum of current iteration                  */
-	double maxresiduum;                         /* maximum residuum value of a slave in iteration */
+	double maxresiduum;                          /* maximum residuum value of a slave in iteration */
 
 	int N = arguments->N;
 	double*** Matrix = arguments->Matrix;
@@ -224,17 +229,17 @@ calculate (struct calculation_arguments* arguments, struct calculation_results *
 	{
 		maxresiduum = 0;
 
-		/* over all rows */
-		for (j = 1; j < N; j++)
+		/* over all columns */
+		for (i = 1; i < N; i++)
 		{
-			/* over all columns */
-			for (i = 1; i < N; i++)
+			/* over all rows */
+			for (j = 1; j < N; j++)
 			{
-				star = -Matrix[m2][i-1][j] - Matrix[m2][i][j-1] - Matrix[m2][i][j+1] - Matrix[m2][i+1][j] + 4.0 * Matrix[m2][i][j];
+				*star = -Matrix[m2][i-1][j] - Matrix[m2][i][j-1] + 4.0 * Matrix[m2][i][j] - Matrix[m2][i][j+1] - Matrix[m2][i+1][j] ;
 
-				residuum = getResiduum(arguments, options, i, j, star);
-				korrektur = residuum;
-				residuum = (residuum < 0) ? -residuum : residuum;
+				korrektur = getResiduum(arguments, options, i, j, star);
+				//korrektur = residuum;
+				residuum = (korrektur < 0) ? -(korrektur) : korrektur;
 				maxresiduum = (residuum < maxresiduum) ? maxresiduum : residuum;
 
 				Matrix[m1][i][j] = Matrix[m2][i][j] + korrektur;
