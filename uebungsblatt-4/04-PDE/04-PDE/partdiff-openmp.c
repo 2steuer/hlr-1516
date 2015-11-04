@@ -251,16 +251,17 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 		/* over all colums */
 		for (j = 1; j < N; j++)
 		{
+
+			/* over all rows */
+			for (i = 1; i < N; i++)
+			{
+
 			double fpisin_i = 0.0;
 
 			if (options->inf_func == FUNC_FPISIN)
 			{
 				fpisin_i = fpisin * sin(pih * (double)i);
 			}
-
-			/* over all rows */
-			for (i = 1; i < N; i++)
-			{
 
 #endif
 
@@ -272,6 +273,13 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 			{
 				j = k % (N - 1) + 1;	// +1 weil k bei 0 anfängt
 				i = k / N +1; 			// i ist int, die Nachkommastellen fallen weg; +1 weil k bei 0 anfängt
+
+				double fpisin_i = 0.0;
+
+				if (options->inf_func == FUNC_FPISIN)
+				{
+					fpisin_i = fpisin * sin(pih * (double)i);
+				}
 
 #endif
 
