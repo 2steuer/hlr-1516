@@ -1,21 +1,36 @@
 # Common definitions
 CC = gcc
 
-# Compiler flags, paths and libraries
-CFLAGS = -std=c99 -pedantic -Wall -Wextra -O2 
-LFLAGS = $(CFLAGS)
+
+	# Compiler flags, paths and libraries
+CFLAGS = -std=c99 -pedantic -Wall -Wextra -O2
+LDFLAGS = $(CFLAGS)
 LIBS   = -lm
-CPPFLAGS = -DCOLS -fopenmp
+OPENMP =  partdiff-openmp-spalte partdiff-openmp-zeile partdiff-openmp-element
 
 
-OPENMP = partdiff-openmp.o askparams.o 
+all: $(OPENMP) 
 
 
-# Rule to create *.o from *.c
-.c.o:
-	$(CC) $(CPPFLAGS) -c $(CFLAGS) $*.c
+partdiff-openmp-spalte: CFLAGS += -DROWS  -fopenmp
+partdiff-openmp-spalten-obj.o: CFLAGS += -DROWS  -fopenmp
+
+partdiff-openmp-zeile: CFLAGS += -DCOLS  -fopenmp
+partdiff-openmp-zeile-obj.o: CFLAGS += -DCOLS  -fopenmp
+
+partdiff-openmp-element: CFLAGS += -DELEMENTS -fopenmp
+partdiff-openmp-element-obj.o: CFLAGS += -DELEMENTS -fopenmp
 
 
-partdiff-openmp-zeile: $(OPENMP) Makefile
-	$(CC) $(LFLAGS) -o $@ $(OPENMP) $(LIBS)
+%-obj.o: partdiff-openmp.c
+	$(CC) $(CFLAGS) -c $< -o $@
+	
+askparams.o: askparams.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
+
+$(OPENMP): % : %-obj.o askparams.o
+	$(CC) $(LDFLAGS) -o $@ $@-obj.o askparams.o $(LIBS)
+
+clean:
+	$(RM) $(OPENMP) *.o *~

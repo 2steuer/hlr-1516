@@ -269,10 +269,9 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 #endif
 
 #ifdef ELEMENTS
-			
+		int k;
 		#pragma omp parallel for private(i, j, star, residuum) reduction(max : maxresiduum)
 			
-
 			for (k = 0; k < ((N-1) * (N-1) - 1); k++)
 			{
 				j = k % (N - 1) + 1;	// +1 weil k bei 0 anfängt
@@ -304,7 +303,10 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 					Matrix_Out[i][j] = star;
 				
 			}
+
+#ifndef	ELEMENTS	
 		}
+#endif
 
 		results->stat_iteration++;
 		results->stat_precision = maxresiduum;
@@ -418,9 +420,7 @@ DisplayMatrix (struct calculation_arguments* arguments, struct calculation_resul
 	}
 
 	fflush (stdout);
-	#ifdef COLS
-		printf("moin");
-	#endif
+	
 }
 
 /* ************************************************************************ */
