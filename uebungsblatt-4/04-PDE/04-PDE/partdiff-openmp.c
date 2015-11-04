@@ -27,7 +27,6 @@
 #include <malloc.h>
 #include <sys/time.h>
 #include <omp.h>
-
 #include "partdiff-seq.h"
 
 struct calculation_arguments
@@ -218,7 +217,7 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 	}
 
 	
-
+	omp_set_num_threads(options->number);	
 	while (term_iteration > 0)
 	{
 		double** Matrix_Out = arguments->Matrix[m1];
@@ -230,9 +229,9 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 #ifdef ROWS
 		
 	#pragma omp parallel for private(j, star, residuum) reduction(max : maxresiduum)
-		omp_set_num_threads(options->number);
+		
 		/* over all rows */
-#endif
+
 		for (i = 1; i < N; i++)
 		{
 			double fpisin_i = 0.0;
@@ -245,12 +244,13 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 			/* over all columns */
 			for (j = 1; j < N; j++)
 			{
+	#endif
 	
 
 #ifdef COLS
 
 	#pragma omp parallel for private(i, star, residuum) reduction(max : maxresiduum)
-		omp_set_num_threads(options->number);		
+			
 		/* over all colums */
 		for (j = 1; j < N; j++)
 		{
@@ -269,9 +269,9 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 #endif
 
 #ifdef ELEMENTS
-
+			
 		#pragma omp parallel for private(i, j, star, residuum) reduction(max : maxresiduum)
-			omp_set_num_threads(options->number);
+			
 
 			for (k = 0; k < ((N-1) * (N-1) - 1); k++)
 			{
@@ -418,6 +418,9 @@ DisplayMatrix (struct calculation_arguments* arguments, struct calculation_resul
 	}
 
 	fflush (stdout);
+	#ifdef COLS
+		printf("moin");
+	#endif
 }
 
 /* ************************************************************************ */
