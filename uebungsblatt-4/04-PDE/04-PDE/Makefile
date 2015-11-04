@@ -6,7 +6,7 @@ CC = gcc
 CFLAGS = -std=c99 -pedantic -Wall -Wextra -O2
 LDFLAGS = $(CFLAGS)
 LIBS   = -lm
-OPENMP =  partdiff-openmp-spalte partdiff-openmp-zeile partdiff-openmp-element
+OPENMP =  partdiff-openmp-spalte partdiff-openmp-zeile partdiff-openmp-element partdiff-seq
 
 
 all: $(OPENMP) 
@@ -21,6 +21,8 @@ partdiff-openmp-zeile-obj.o: CFLAGS += -DCOLS  -fopenmp
 partdiff-openmp-element: CFLAGS += -DELEMENTS -fopenmp
 partdiff-openmp-element-obj.o: CFLAGS += -DELEMENTS -fopenmp
 
+partdiff-seq.o: partdiff-openmp.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 %-obj.o: partdiff-openmp.c
 	$(CC) $(CFLAGS) -c $< -o $@

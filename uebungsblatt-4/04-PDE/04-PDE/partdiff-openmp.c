@@ -216,8 +216,10 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 		fpisin = 0.25 * TWO_PI_SQUARE * h * h;
 	}
 
-	
+#if defined(ROWS) || defined(COLS) || defined(ELEMENTS)
 	omp_set_num_threads(options->number);	
+#endif
+
 	while (term_iteration > 0)
 	{
 		double** Matrix_Out = arguments->Matrix[m1];
@@ -225,7 +227,23 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 
 		maxresiduum = 0;
 
-		
+
+#if !defined(ROWS) && !defined(COLS) && !defined(ELEMENTS)	
+		for (i = 1; i < N; i++)
+				{
+					double fpisin_i = 0.0;
+
+					if (options->inf_func == FUNC_FPISIN)
+					{
+						fpisin_i = fpisin * sin(pih * (double)i);
+					}
+
+					/* over all columns */
+					for (j = 1; j < N; j++)
+					{
+#endif
+
+
 #ifdef ROWS
 		
 	#pragma omp parallel for private(j, star, residuum) reduction(max : maxresiduum)
@@ -244,7 +262,7 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 			/* over all columns */
 			for (j = 1; j < N; j++)
 			{
-	#endif
+#endif
 	
 
 #ifdef COLS
