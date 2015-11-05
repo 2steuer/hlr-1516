@@ -12,11 +12,11 @@ OPENMP =  partdiff-openmp-spalte partdiff-openmp-zeile partdiff-openmp-element p
 all: $(OPENMP) 
 
 
-partdiff-openmp-spalte: CFLAGS += -DROWS  -fopenmp
-partdiff-openmp-spalten-obj.o: CFLAGS += -DROWS  -fopenmp
+partdiff-openmp-spalte: CFLAGS += -DCOLS  -fopenmp
+partdiff-openmp-spalten-obj.o: CFLAGS += -DCOLS  -fopenmp
 
-partdiff-openmp-zeile: CFLAGS += -DCOLS  -fopenmp
-partdiff-openmp-zeile-obj.o: CFLAGS += -DCOLS  -fopenmp
+partdiff-openmp-zeile: CFLAGS += -DROWS  -fopenmp
+partdiff-openmp-zeile-obj.o: CFLAGS += -DROWS  -fopenmp
 
 partdiff-openmp-element: CFLAGS += -DELEMENTS -fopenmp
 partdiff-openmp-element-obj.o: CFLAGS += -DELEMENTS -fopenmp
