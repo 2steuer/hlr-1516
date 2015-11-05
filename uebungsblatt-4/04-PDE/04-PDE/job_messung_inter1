@@ -4,4 +4,4 @@
 #SBATCH --time=02:30:00
 #SBATCH --output=out_inter/Messung1.out
 
-./messreihe_threads.sh 1
+./messreihe_inter.sh 1
