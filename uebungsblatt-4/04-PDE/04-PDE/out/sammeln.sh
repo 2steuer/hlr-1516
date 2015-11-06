@@ -5,9 +5,15 @@ then
 	touch ergebnisse
 fi
 
-for ((i=7;i<11;i++)); do
+#i nummer des laufs
+#j threadanzahl
+
+for ((i=1;i<10;i++)); do
 	for ((j=1;j<13;j++)); do
-		echo "run: $i threads: $j" >> ergebnisse;
-		cat t_${i}_${j}.out | grep zeit >> ergebnisse;
+		if [ ! -f "t_${i}_${j}.out" ]
+			then 
+			echo "run: $i threads: $j" >> ergebnisse;
+			cat t_${i}_${j}.out | grep zeit >> ergebnisse;
+		fi
 	done
 done
