@@ -2,7 +2,7 @@
 
 if [ ! -f "ergebnisse" ]
 then 
-	touche ergebnisse
+	touch ergebnisse
 fi
 
 for ((i=7;i<11;i++)); do
