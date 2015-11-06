@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#SBATCH -N 4 --cpus-per-task=12
+#SBATCH --cpus-per-task=12
 #SBATCH --time=01:30:00
 #SBATCH --output=out/Messung1.out
 
-srun ./messreihe_threads.sh 10 &
-srun ./messreihe_threads.sh 9 &
-srun ./messreihe_threads.sh 8 &
-srun ./messreihe_threads.sh 7
+srun ./messreihe_threads.sh 1
+srun ./messreihe_threads.sh 2
+srun ./messreihe_threads.sh 3 
+srun ./messreihe_threads.sh 4
