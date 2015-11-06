@@ -14,7 +14,7 @@ for ((i=1;i<10;i++)); do
 		if [ -f "$file" ]
 			then 
 			echo "run: $i threads: $j" >> ergebnisse;
-			cat t_${i}_${j}.out | grep zeit >> ergebnisse;
+			cat ${file} | grep zeit >> ergebnisse;
 		fi
 	done
 done
