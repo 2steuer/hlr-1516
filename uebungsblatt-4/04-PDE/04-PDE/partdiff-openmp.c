@@ -216,6 +216,7 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 		fpisin = 0.25 * TWO_PI_SQUARE * h * h;
 	}
 
+//omp_set_num_threads() legt die Anzahl der Threads fest, dies brauchen wir nur, wenn openmp genutzt wird.
 #if defined(ROWS) || defined(COLS) || defined(ELEMENTS)
 	omp_set_num_threads(options->number);	
 #endif
@@ -227,7 +228,8 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 
 		maxresiduum = 0;
 
-
+//Wenn mit dem preprocessor flag -D die Makros ROWS, COLS oder ELEMENTS definiert werden, wird hier der 
+//default code kompiliert.
 #if !defined(ROWS) && !defined(COLS) && !defined(ELEMENTS)	
 		for (i = 1; i < N; i++)
 				{
@@ -243,9 +245,13 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 					{
 #endif
 
-
+// -D ROWS
 #ifdef ROWS
-		
+	
+	//Hier wird die for-schleife über i mit openmp parallelisiert, also über die Zeilen;
+	//j, star, residuum müssen hierbei private sein,
+	//da diese außerhalb definiert wurden.
+	//Nach der Ausführung hat jeder parallel Vorgangn ein maxresiduum, hiervon wird das Maximun übernommen.
 	#pragma omp parallel for private(j, star, residuum) reduction(max : maxresiduum)
 		
 		/* over all rows */
@@ -264,9 +270,10 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 			{
 #endif
 	
-
+// -D COLS
 #ifdef COLS
 
+	//Parallelisierung über Spalten, hierfür wurden i und j getauscht.
 	#pragma omp parallel for private(i, star, residuum) reduction(max : maxresiduum)
 			
 		/* over all colums */
@@ -287,6 +294,10 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 #endif
 
 #ifdef ELEMENTS
+		/*	Für die Parallelisierung über die Elemente haben wir die ursprünglichen zwei Schleifen
+			in eine umgewandelt. Mit dem Zähler k wird dann die entsprechene Zeile/Spalte berechnet.
+			Sonst wie oben.
+		*/
 		int k;
 		#pragma omp parallel for private(i, j, star, residuum) reduction(max : maxresiduum)
 			
@@ -321,7 +332,7 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 					Matrix_Out[i][j] = star;
 				
 			}
-
+//Wenn ELEMENTS definiert ist, gibt es oben eine for-Schleife weniger.
 #ifndef	ELEMENTS	
 		}
 #endif
