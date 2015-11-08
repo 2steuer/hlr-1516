@@ -1,0 +1,21 @@
+
+set title "Lauftzeit in Abhaengigkeit der Anzahl der Threads"
+
+
+set xlabel "Zahl der Threads"
+set ylabel "Laufzeit in Sekunden"
+unset key
+
+
+set xtics 1 nomirror
+set ytics auto nomirror
+
+set grid
+
+set style histogram clustered gap 1
+set boxwidth 0.2 relative
+set style fill  solid 0.5 noborder
+
+set term postscript
+set output "threads.ps"
+plot "Threads.dat" using 1:2 w boxes
