@@ -2,25 +2,26 @@
 CC = gcc
 
 # Compiler flags, paths and libraries
-CFLAGS = -std=c99 -pedantic -Wall -Wextra -O2 -ggdb
+CFLAGS = -std=c99 -pedantic -Wall -Wextra -O2 -ggdb -pthread
 LFLAGS = $(CFLAGS)
 LIBS   = -lm
 
-OBJS = partdiff-seq.o askparams.o
+OBJS = partdiff-posix.o askparams.o
+
 
 # Rule to create *.o from *.c
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c
 
 # Targets ...
-all: partdiff-seq
+all: partdiff-posix
 
-partdiff-seq: $(OBJS) Makefile
+
+
+partdiff-posix: $(OBJS) Makefile
 	$(CC) $(LFLAGS) -o $@ $(OBJS) $(LIBS)
 
 clean:
-	$(RM) *.o *~
+	 $(RM) *.o *~ partdiff-posix
 
-partdiff-seq.o: partdiff-seq.c Makefile
 
-askparams.o: askparams.c Makefile
