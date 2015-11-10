@@ -1,0 +1,29 @@
+#!/bin/bash
+
+#SBATCH --cpus-per-task=12
+#SBATCH --time=03:00:00
+#SBATCH --output=out/Messung1.out
+
+
+
+#ausführen
+for(j=1; j<4; j++)
+	for (i=1; i<13;i++); do
+		./partdiff-posix $i 2 512 2 2 1024 >> out/run_${j}_threads_${i}.out
+	done
+done
+
+#sammeln
+for ((i=1;i<11;i++)); do
+	for ((j=1;j<13;j++)); do
+		file = out/run_${j}_threads_${i}.out
+                if [ -f "$file" ]
+                        then 
+                        echo "run: $i threads: $j" >> ergebnisse;
+                        grep zeit ${file} >> ergebnisse;
+                fi
+	done
+done
+
+
+

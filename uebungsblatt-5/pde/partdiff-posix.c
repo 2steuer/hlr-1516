@@ -284,7 +284,7 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 	double number_of_rows_per_thread = (N-1)/NUM_THREADS;
 
 	//Speicher für die Argumente allozieren
-	struct thread_arguments *thread_arguments = (struct thread_arguments*) malloc(NUM_THREADS * sizeof (struct thread_arguments));
+	struct thread_arguments *thread_arguments = malloc(NUM_THREADS * sizeof (struct thread_arguments));
 
 	//
 	double* maxresiduum_p = malloc(NUM_THREADS * (sizeof (double)));
