@@ -7,8 +7,8 @@
 
 
 #ausführen
-for(j=1; j<4; j++);
-	for (i=1; i<13;i++); do
+for((j=1; j<4; j++)); do
+	for ((i=1; i<13;i++)); do
 		./partdiff-posix $i 2 512 2 2 1024 >> out/run_${j}_threads_${i}.out
 	done
 done
