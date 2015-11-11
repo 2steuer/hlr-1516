@@ -46,6 +46,8 @@ struct calculation_results
 	double    stat_precision; /* actual precision of all slaves in iteration    */
 };
 
+
+//structure um den Threads argumente mitzugeben
 struct thread_arguments
 {
 	struct options *options;
@@ -207,18 +209,18 @@ calculate_part(void *arg){
 
 	const struct thread_arguments* thread_arguments =  arg;
 
-
 	double star = 0;                                /* four times center value minus 4 neigh.b values */
 	double residuum = 0; 
 	int i, j;
 
+	//für die Lesbarkeit
 	double** Matrix_Out = thread_arguments->Matrix_Out;
 	double** Matrix_In = thread_arguments->Matrix_In;
 
-
+	//für die Lesbarkeit
 	struct options const* options = thread_arguments->options;
 
-	//
+	//für die Lesbarkeit
 	double* maxresiduum = thread_arguments->maxresiduum;
 
 	/* over all rows */
@@ -252,6 +254,7 @@ calculate_part(void *arg){
 			}
 		}
 
+	//aktuellen Thread beenden
 	pthread_exit(NULL);
 }
 
@@ -262,11 +265,10 @@ static
 void
 calculate (struct calculation_arguments const* arguments, struct calculation_results *results, struct options const* options)
 {
-	int i, t;                                   /* local variables for loops  */
+	int i, t;                                   
 	int m1, m2;    
-	double maxresiduum;                             /* used as indices for old and new matrices       */
-				     						   /* residuum of current iteration                  */
-                        /* maximum residuum value of a slave in iteration */
+	double maxresiduum;                     
+
 	int const N = arguments->N;
 	double const h = arguments->h;
 
@@ -274,19 +276,19 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 	double fpisin = 0.0;
 	int term_iteration = options->term_iteration;
 
-	//Anzahl der Threads
+	//number of threads
 	int NUM_THREADS = options->number;
 
-	//
+	//create thread ids
 	pthread_t threads[NUM_THREADS];
 
-	//why n-1
+	//rows per thread, row 0 and N are outer rows.
 	double number_of_rows_per_thread = (N-1)/NUM_THREADS;
 
-	//Speicher für die Argumente allozieren
-	struct thread_arguments *thread_arguments = malloc(NUM_THREADS * sizeof (struct thread_arguments));
+	//allocate memory for the arguments
+	struct thread_arguments *thread_arguments = malloc(NUM_THREADS * (sizeof (struct thread_arguments)));
 
-	//
+	//allocate memory for maxresiduum_p, because the pthreads have to write there.
 	double* maxresiduum_p = malloc(NUM_THREADS * (sizeof (double)));
 
 
@@ -308,28 +310,31 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 		fpisin = 0.25 * TWO_PI_SQUARE * h * h;
 	}
 
+	//row 0 and N are outer rows.
 	int start_row = 1;
 	int end_row = N-1;
 
-	//argumente initialisieren
+	//initialize arguments for pthreads
 	for(t = 0; t < NUM_THREADS; t++){
-	
+
 		thread_arguments[t].options = (struct options*) options;
 		thread_arguments[t].pih = pih;
 		thread_arguments[t].fpisin = fpisin;
 		thread_arguments[t].N = N;
 
-		//
+		//first row for pthread #t
 		thread_arguments[t].first_row = start_row;
 
-		//todo
+		//last row for pthread #t
 		thread_arguments[t].last_row = round ((t+1) * number_of_rows_per_thread);
 		
-		//todo
+		//update start_row for next thread
 		start_row = thread_arguments[t].last_row; 
+
+		//the last_row for a thread shoulb not be greater than the actual last row of the matrix.
 		thread_arguments[t].last_row = (thread_arguments[t].last_row < end_row) ? thread_arguments[t].last_row : end_row;
 
-		//maxresiduum adresse zuweisen
+		//every phtread gets his own memory for writing the maxresiduum, so later we can easily reduce it.
 		thread_arguments[t].maxresiduum = &maxresiduum_p[t];
 	}
 
@@ -340,9 +345,10 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 
 		maxresiduum = 0;
 
-		//starting threads
+		//start threads
 		for (t = 0; t < NUM_THREADS; t++){
 
+			//update some arguments
 			maxresiduum_p[t] = 0;
 
 			thread_arguments[t].term_iteration = term_iteration;
@@ -359,12 +365,12 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 
 		//waiting for threads to complete
 		for (t = 0; t < NUM_THREADS; ++t) {
-      		// block until thread 't' completes
+
+      		//block until thread 't' completes
       		pthread_join(threads[t], NULL);
 
 			//reduction of maximum
       		maxresiduum = (maxresiduum_p[t] > maxresiduum) ? maxresiduum_p[t] : maxresiduum;
-      		
  		}
 
 		results->stat_iteration++;
