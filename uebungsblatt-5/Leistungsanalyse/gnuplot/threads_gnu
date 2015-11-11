@@ -1,9 +1,9 @@
 
-set title "Lauftzeit in Abhaengigkeit der Anzahl der Threads"
+set title "Speedup in Abhaengigkeit der Anzahl der Threads"
 
 
 set xlabel "Zahl der Threads"
-set ylabel "Laufzeit in Sekunden"
+set ylabel "Speedup"
 unset key
 
 
@@ -12,10 +12,8 @@ set ytics auto nomirror
 
 set grid
 
-set style histogram clustered gap 1
-set boxwidth 0.2 relative
-set style fill  solid 0.5 noborder
+set style line 1 lt 2 lw 2 pt 3 
 
 set term postscript
 set output "threads.ps"
-plot "Threads.dat" using 1:2 w boxes
+plot "Threads.dat" using 1:2 w l
