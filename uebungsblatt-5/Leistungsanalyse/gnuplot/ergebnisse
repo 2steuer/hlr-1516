@@ -1,0 +1,76 @@
+run: 1 threads: 1
+Berechnungszeit:    640.495859 s 
+run: 1 threads: 2
+Berechnungszeit:    321.433206 s 
+run: 1 threads: 3
+Berechnungszeit:    229.308751 s 
+run: 1 threads: 4
+Berechnungszeit:    174.236861 s 
+run: 1 threads: 5
+Berechnungszeit:    145.157061 s 
+run: 1 threads: 6
+Berechnungszeit:    127.445532 s 
+run: 1 threads: 7
+Berechnungszeit:    115.017130 s 
+run: 1 threads: 8
+Berechnungszeit:    106.477635 s 
+run: 1 threads: 9
+Berechnungszeit:    99.069830 s 
+run: 1 threads: 10
+Berechnungszeit:    93.936927 s 
+run: 1 threads: 11
+Berechnungszeit:    89.158729 s 
+run: 1 threads: 12
+Berechnungszeit:    85.181417 s 
+run: 2 threads: 1
+Berechnungszeit:    638.946132 s 
+run: 2 threads: 2
+Berechnungszeit:    320.843117 s 
+run: 2 threads: 3
+Berechnungszeit:    231.127273 s 
+run: 2 threads: 4
+Berechnungszeit:    176.529485 s 
+run: 2 threads: 5
+Berechnungszeit:    147.742094 s 
+run: 2 threads: 6
+Berechnungszeit:    129.743674 s 
+run: 2 threads: 7
+Berechnungszeit:    114.798366 s 
+run: 2 threads: 8
+Berechnungszeit:    105.596892 s 
+run: 2 threads: 9
+Berechnungszeit:    99.535500 s 
+run: 2 threads: 10
+Berechnungszeit:    93.590033 s 
+run: 2 threads: 11
+Berechnungszeit:    88.603646 s 
+run: 2 threads: 12
+Berechnungszeit:    85.601548 s 
+run: 3 threads: 1
+Berechnungszeit:    638.322929 s 
+run: 3 threads: 2
+Berechnungszeit:    320.783370 s 
+run: 3 threads: 3
+Berechnungszeit:    224.182020 s 
+run: 3 threads: 4
+Berechnungszeit:    174.411687 s 
+run: 3 threads: 5
+Berechnungszeit:    149.040003 s 
+run: 3 threads: 6
+Berechnungszeit:    127.583241 s 
+run: 3 threads: 7
+Berechnungszeit:    115.841603 s 
+run: 3 threads: 8
+Berechnungszeit:    106.796527 s 
+run: 3 threads: 9
+Berechnungszeit:    99.939035 s 
+run: 3 threads: 10
+Berechnungszeit:    93.774391 s 
+run: 3 threads: 11
+Berechnungszeit:    88.511067 s 
+run: 3 threads: 12
+Berechnungszeit:    85.619195 s 
+
+
+
+
