@@ -326,7 +326,7 @@ calculate (struct calculation_arguments const* arguments, struct calculation_res
 		thread_arguments[t].first_row = start_row;
 
 		//last row for pthread #t
-		thread_arguments[t].last_row = round ((t+1) * number_of_rows_per_thread);
+		thread_arguments[t].last_row = round ((t+1) * number_of_rows_per_thread) +(2*NUM_THREADS-2*t);
 		
 		//update start_row for next thread
 		start_row = thread_arguments[t].last_row; 
