@@ -1,0 +1,8 @@
+#!/bin/bash
+
+
+#SBATCH --ntasks=25
+#SBATCH --output=mpi_run.out
+
+mpirun ./main >> timescript.out
+
