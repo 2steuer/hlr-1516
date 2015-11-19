@@ -1,0 +1,9 @@
+- Man kann entweder beim Aufruf von ddt direkt die Paramter übergeben, oder im Job Submission Formular beim Programmstart die Argumente übergeben sowie weitere Einstellungen vornehmen.
+
+- Step Into: Einen schritt weiter, ist es ein Funktionsaufruf, so gehe zur ersten Zeile dieser Funktion und halte dort.
+ Step over: Immer einen Schritt in der aktuellen Funktion weiter, springe über Funktionsaufrufe hinweg
+ Step out: Überspringe den Rest der aktuellen Funktion und springe zur Aufrufenden Funktion zurück, halte dort.
+
+- Die Anzeige der IDs ist gleich der eines Arrays. Dies hat Sinn, da es ja n verschiedene IDs gibt, die für jeden Thread individuell sind.
+
+- Neben Arrays, die als kleines XY-Diagramm angezeigt werden (zumindest, wenn Zahlen darin gespeichert werden), werden Structs in der Form {struct_member=value, ...} angezeigt. Structs kann man weiterhin als Baum-Liste ausklappen und so die einzelnen Werte der Member anzeigen lassen. Strings werden ebenfalls als solche angezeigt, zu erkennen an den doppelten Hochkommata ("").
