@@ -4,5 +4,11 @@
 #SBATCH --ntasks=25
 #SBATCH --output=mpi_run.out
 
-mpirun ./main >> timescript.out
+echo "" > timescript_1.out
+echo "" > timescript_2.out
+
+mpirun ./timempi >> timescript_1.out
+
+mpirun ./timempi2 >> timescript_2.out
+
 

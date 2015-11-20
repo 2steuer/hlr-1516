@@ -9,8 +9,6 @@
 
 #define MASTER 0
 
-
-
 int
 main()
 {	
@@ -58,10 +56,8 @@ main()
 		microsec = tv.tv_usec;
  		tm = localtime(&tv.tv_sec);
  		snprintf(buffer_microsec, 6, "%06d", microsec);
-	
 
 		strftime(buffer_time, 20, "%Y-%m-%d %H:%M:%S", tm);
-
 
 		gethostname(buffer_hostname, sizeof buffer_hostname);
 		strcat(buffer_hostname, ": ");
