@@ -64,7 +64,7 @@ main()
 
     	MPI_Reduce(&microsec, &global_microsec_min, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
         //wait for results from other tasks
-        for (i=0; i<numtasks; i++)
+        for (i=1; i<numtasks; i++)
         {
             //MPI_RECV(buf,count,datatype,source,tag,comm,status)
             MPI_Recv(formatted_string, 40, MPI_CHAR, i, tag,  MPI_COMM_WORLD, &status);
