@@ -36,6 +36,8 @@ main()
 
             printf("%s\n", formatted_string);
         }
+
+        MPI_Reduce(&microsec, &global_microsec_min, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
         printf("%d\n", global_microsec_min);
     }
 
@@ -53,10 +55,7 @@ main()
 
 		gettimeofday(&tv, NULL);
 
-
 		microsec = tv.tv_usec;
-
-		MPI_Reduce(&microsec, &global_microsec_min, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
 
  		tm = localtime(&tv.tv_sec);
  		snprintf(buffer_microsec, 6, "%06d", microsec);
@@ -64,13 +63,13 @@ main()
 
 		strftime(buffer_time, 20, "%Y-%m-%d %H:%M:%S", tm);
 
-
 		gethostname(buffer_hostname, sizeof buffer_hostname);
 		strcat(buffer_hostname, ": ");
 		strcat(buffer_hostname, buffer_time);
 		strcat(buffer_hostname,".");
 		strcat(buffer_hostname, buffer_microsec);
 
+		MPI_Reduce(&microsec, &global_microsec_min, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
 		//MPI_SEND(buf,count,datatype,dest,tag,comm)
 		MPI_Send(buffer_hostname, 40, MPI_CHAR, MASTER, tag, MPI_COMM_WORLD);
 	}
