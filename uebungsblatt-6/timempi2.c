@@ -9,26 +9,39 @@
 
 #define MASTER 0
 
-
-
 int
 main()
 {
 	int  numtasks, taskid, source, i, tag;
 	int global_microsec_min;
-//char hostname[MPI_MAX_PROCESSOR_NAME];
+	//char hostname[MPI_MAX_PROCESSOR_NAME];
 	MPI_Status status;
 	tag = 1;
-
 
 	MPI_Init(NULL, NULL);
 
 	MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
 	MPI_Comm_rank(MPI_COMM_WORLD, &taskid);
 
+	
+    if (taskid == MASTER)
+    {
+    	char formatted_string[40];
+        //wait for results from other tasks
+        for (i=0; i<numtasks; i++)
+        {
+            source = i;
+            //MPI_RECV(buf,count,datatype,source,tag,comm,status)
+            MPI_Recv(formatted_string, 40, MPI_CHAR, source, tag,  MPI_COMM_WORLD, &status);
+
+            printf("%s\n", formatted_string);
+        }
+        printf("%d\n", global_microsec_min);
+    }
+
 
 	// We need to do this on EVERY process
-	if(taskid >= MASTER)
+	if(taskid > MASTER)
 	{
 		char buffer_time[20];
 		char buffer_hostname[40];
@@ -61,30 +74,6 @@ main()
 		//MPI_SEND(buf,count,datatype,dest,tag,comm)
 		MPI_Send(buffer_hostname, 40, MPI_CHAR, MASTER, tag, MPI_COMM_WORLD);
 	}
-	
-	// Above, the master sends itself some stuff, and receives from itself here too:
-	char formatted_string[40];
-        if (taskid == MASTER)
-        {
-
-                //wait for results from other tasks
-                for (i=0; i<numtasks; i++)
-                {
-                        source = i;
-                        //MPI_RECV(buf,count,datatype,source,tag,comm,status)
-                        MPI_Recv(formatted_string, 40, MPI_CHAR, source, tag,  MPI_COMM_WORLD, &status);
-
-                        printf("%s\n", formatted_string);
-                }
-        }
-
-
-	MPI_Barrier(MPI_COMM_WORLD);
-
-	if(taskid == MASTER)
-        {
-                printf("%d\n", global_microsec_min);
-        }
 
 	MPI_Barrier(MPI_COMM_WORLD);
 	printf("Rang %i beendet jetzt!\n", taskid);

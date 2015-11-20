@@ -6,14 +6,19 @@ CFLAGS = -std=c99  -pedantic -Wall -Wextra -g
 LFLAGS = $(CFLAGS)
 LIBS   = -lm
 
-OBJ = main.o 
+OBJ = timempi.o 
+OBJ2 = timempi2.o
 
+all: timempi timempi2
 
-main: $(OBJ)
+timempi: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
 
+timempi2: $(OBJ2)
+	$(CC) -o $@ $^ $(CFLAGS)
 
 clean:
 	rm -f *.o
 	rm -f *~
-	rm main
+	rm timempi
+	rm timempi2
