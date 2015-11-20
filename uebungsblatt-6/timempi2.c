@@ -24,12 +24,12 @@ main()
 	MPI_Comm_rank(MPI_COMM_WORLD, &taskid);
 
 	
+
 	char buffer_time[20];
 	char buffer_hostname[40];
-	char buffer_microsec[6];
+	char buffer_microsec[7];
 	int microsec;
 	struct tm* tm;
-
 	struct timeval tv;
 
 	gettimeofday(&tv, NULL);
@@ -37,8 +37,7 @@ main()
 	microsec = tv.tv_usec;
 
 	tm = localtime(&tv.tv_sec);
-	snprintf(buffer_microsec, 6, "%06d", microsec);
-
+	snprintf(buffer_microsec, 7, "%06d", microsec);
 
 	strftime(buffer_time, 20, "%Y-%m-%d %H:%M:%S", tm);
 
@@ -47,6 +46,8 @@ main()
 	strcat(buffer_hostname, buffer_time);
 	strcat(buffer_hostname,".");
 	strcat(buffer_hostname, buffer_microsec);
+
+
 
 	if(taskid > MASTER)
 	{
@@ -57,12 +58,12 @@ main()
 
 	if (taskid == MASTER)
     {
-    	char formatted_string[40];
-
-    	//own Hostname : timestamp
+    	//own Hostname:Timestamp
     	printf("%s\n", buffer_hostname);
 
     	MPI_Reduce(&microsec, &global_microsec_min, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
+
+    	char formatted_string[40];
         //wait for results from other tasks
         for (i=1; i<numtasks; i++)
         {
