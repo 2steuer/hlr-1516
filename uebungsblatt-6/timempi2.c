@@ -47,15 +47,6 @@ main()
 	strcat(buffer_hostname,".");
 	strcat(buffer_hostname, buffer_microsec);
 
-
-
-	if(taskid > MASTER)
-	{
-		MPI_Reduce(&microsec, &global_microsec_min, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
-		//MPI_SEND(buf,count,datatype,dest,tag,comm)
-		MPI_Send(buffer_hostname, 40, MPI_CHAR, MASTER, tag, MPI_COMM_WORLD);
-	}
-
 	if (taskid == MASTER)
     {
     	//own Hostname:Timestamp
@@ -74,6 +65,13 @@ main()
         }  
         printf("%d\n", global_microsec_min);
     }    
+
+    if(taskid > MASTER)
+	{
+		MPI_Reduce(&microsec, &global_microsec_min, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
+		//MPI_SEND(buf,count,datatype,dest,tag,comm)
+		MPI_Send(buffer_hostname, 40, MPI_CHAR, MASTER, tag, MPI_COMM_WORLD);
+	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
 	printf("Rang %i beendet jetzt!\n", taskid);
