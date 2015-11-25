@@ -42,7 +42,7 @@ circle (int* buf, int count)
 
 	int next, previous;
 	int new_buf[count];
-	
+
 	//only one process
 	if(nprocs == 1)
 	{
@@ -81,7 +81,7 @@ circle (int* buf, int count)
 		MPI_Send(buf, count, MPI_INT, next, 0, MPI_COMM_WORLD);		
 	}
 
-  	return buf;
+  	return new_buf;
 }
 
 
