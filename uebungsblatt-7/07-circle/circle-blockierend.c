@@ -36,44 +36,52 @@ init (int N)
 }
 
 
-void
+int*
 circle (int* buf, int count)
 { 
-  MPI_Request request;
 
-  int next, previous;
+	int next, previous;
+	int new_buf[count];
+	
+	//only one process
+	if(nprocs == 1)
+	{
+	return buf;
+	}
 
-  //only one process
-  if(nprocs == 1)
-  {
-    //return buf;
-    return;
-  }
+	//Master process
+	else if(rank == MASTER)
+	{
+	next = rank + 1;
+	previous = LAST;
+	}
 
-  //Master process
-  else if(rank == MASTER)
-  {
+	//last process
+	else if(rank == LAST)
+	{
+	next = MASTER;
+	previous = rank - 1;
+	}
+
+  	//the other processes
+	else
+	{
     next = rank + 1;
-    previous = LAST;
-  }
-
-  //last process
-  else if(rank == LAST)
-  {
-    next = MASTER;
     previous = rank - 1;
-  }
+ 	}
+	
+	if(rank%2 == 0)
+	{
+		MPI_Send(buf, count, MPI_INT, next, 0, MPI_COMM_WORLD);
+		MPI_Recv(new_buf, count, MPI_INT, previous, 0, MPI_COMM_WORLD, &status);
+	}
+	else 
+	{
+		MPI_Recv(new_buf, count, MPI_INT, previous, 0, MPI_COMM_WORLD, &status);
+		MPI_Send(buf, count, MPI_INT, next, 0, MPI_COMM_WORLD);		
+	}
 
-  //the other processes
-  else
-  {
-    next = rank + 1;
-    previous = rank - 1;
-  }
-
-  MPI_Isend(buf, count, MPI_INT, next, 0, MPI_COMM_WORLD, &request);
-  MPI_Irecv(buf, count, MPI_INT, previous, 0, MPI_COMM_WORLD, &request);
-
+  	return buf;
 }
 
 
@@ -177,9 +185,9 @@ main (int argc, char** argv)
   if(rank == MASTER)
   {
     first_value = buf[1];
-    MPI_Send(&first_value, 1, MPI_INT, (nprocs-1), 0, MPI_COMM_WORLD);
+    MPI_Send(&first_value, 1, MPI_INT, LAST, 0, MPI_COMM_WORLD);
   }
-  if(rank == (nprocs-1))
+  if(rank == LAST)
   {
     MPI_Recv(&first_value, 1, MPI_INT, MASTER, 0, MPI_COMM_WORLD, &status);
   }
@@ -193,7 +201,7 @@ main (int argc, char** argv)
   //Start circling
   while(termination)
   {
-    circle(buf, maxbuf_length);
+    buf = circle(buf, maxbuf_length);
 
     //wait for all processes to circle
     MPI_Barrier(MPI_COMM_WORLD);
@@ -201,10 +209,10 @@ main (int argc, char** argv)
     //check for termination condition
     if(rank == LAST)
     {
-      if (buf[1] == first_value)
-      {
-          termination = 0;
-      }
+	    if (buf[1] == first_value)
+	    {
+	        termination = 0;
+	    }
     }
 
     //Broadcast termination status
