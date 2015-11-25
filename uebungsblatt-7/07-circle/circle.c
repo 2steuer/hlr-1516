@@ -96,6 +96,7 @@ ausgabe(int* buf, int buf_length, int time)
 		for (int j = 1; j < buf[0]; j++)
 		{
 			printf ("rank %d: %d\n", MASTER, buf[j]);
+			fflush(stdout);
 		}
 
 
@@ -110,6 +111,7 @@ ausgabe(int* buf, int buf_length, int time)
 			for (int j = 1; j < print_buf[0]; j++)
 			{
 				printf ("rank %d: %d\n", i, print_buf[j]);
+				fflush(stdout);
 			}
 		}  
 	}
