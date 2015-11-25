@@ -18,203 +18,202 @@ MPI_Status status;
 int*
 init (int N)
 {
-  int* buf = malloc(sizeof(int) * N);
+	int* buf = malloc(sizeof(int) * N);
 
-  //first place for length of array
-  buf[0] = N;
+	//first place for length of array
+	buf[0] = N;
 
-  //+rank, because sometimes prozesses on the same node had the same seed.
-  srand(time(NULL)+rank);
+	//+rank, because sometimes prozesses on the same node had the same seed.
+	srand(time(NULL)+rank);
 
-  //rest for rand numbers
-  for (int i = 1; i < N; i++)
-  {
-    buf[i] = rand() % 25; //do not modify %25
-  }
+	//rest for rand numbers
+	for (int i = 1; i < N; i++)
+	{
+		buf[i] = rand() % 25; //do not modify %25
+	}
 
-  return buf;
+	return buf;
 }
 
 
 void
 circle (int* buf, int count)
-{ 
-  MPI_Request request;
+{ 	
+	printf("%i\n", buf[1]);
+	MPI_Request request;
 
-  int next, previous;
+	int next, previous;
 
-  //only one process
-  if(nprocs == 1)
-  {
-    //return buf;
-    return;
-  }
+	//only one process
+	if(nprocs == 1)
+	{
+		//return buf;
+		return;
+	}
 
-  //Master process
-  else if(rank == MASTER)
-  {
-    next = rank + 1;
-    previous = LAST;
-  }
+	//Master process
+	else if(rank == MASTER)
+	{
+		next = rank + 1;
+		previous = LAST;
+	}
 
-  //last process
-  else if(rank == LAST)
-  {
-    next = MASTER;
-    previous = rank - 1;
-  }
+	//last process
+	else if(rank == LAST)
+	{
+		next = MASTER;
+		previous = rank - 1;
+	}
 
-  //the other processes
-  else
-  {
-    next = rank + 1;
-    previous = rank - 1;
-  }
+	//the other processes
+	else
+	{
+		next = rank + 1;
+		previous = rank - 1;
+	}
 
-  MPI_Isend(buf, count, MPI_INT, next, 0, MPI_COMM_WORLD, &request);
-  MPI_Irecv(buf, count, MPI_INT, previous, 0, MPI_COMM_WORLD, &request);
-
+	MPI_Isend(buf, count, MPI_INT, next, 0, MPI_COMM_WORLD, &request);
+	MPI_Irecv(buf, count, MPI_INT, previous, 0, MPI_COMM_WORLD, &request);
 }
-
 
 //time, 0 before, 1 after
 void 
 ausgabe(int* buf, int buf_length, int time)
 {
-  //Ausgabe "Before" von Master
-  if(rank == MASTER)
-  { 
+	//Ausgabe "Before" von Master
+	if(rank == MASTER)
+	{ 
+		if(time == BEFORE)
+		{
+			printf("\nBefore\n");
+		}
+		else if (time == AFTER)
+		{
+			printf("\nAfter\n");
+		}
 
-    if(time == BEFORE)
-    {
-      printf("\nBefore\n");
-    }
-    else if (time == AFTER)
-    {
-      printf("\nAfter\n");
-    }
-    
 
-    //printf for MASTER, an buf[0] steht die Länge des Arrays
-    for (int j = 1; j < buf[0]; j++)
-      {
-        printf ("rank %d: %d\n", MASTER, buf[j]);
-      }
+		//printf for MASTER, an buf[0] steht die Länge des Arrays
+		for (int j = 1; j < buf[0]; j++)
+		{
+			printf ("rank %d: %d\n", MASTER, buf[j]);
+		}
 
-    
-    int print_buf[buf_length];
 
-    //printf für die restlichen Prozesse, an print_buf[0] steht die Länge des Arrays
-    for (int i = 1; i < nprocs; i++)
-      { 
-        //MPI_RECV(buf,count,datatype,source,tag,comm,status)
-        MPI_Recv(&print_buf, buf_length, MPI_INT, i, 0,  MPI_COMM_WORLD, &status);
+		int print_buf[buf_length];
 
-        for (int j = 1; j < print_buf[0]; j++)
-        {
-          printf ("rank %d: %d\n", i, print_buf[j]);
-        }
+		//printf für die restlichen Prozesse, an print_buf[0] steht die Länge des Arrays
+		for (int i = 1; i < nprocs; i++)
+		{ 
+			//MPI_RECV(buf,count,datatype,source,tag,comm,status)
+			MPI_Recv(&print_buf, buf_length, MPI_INT, i, 0,  MPI_COMM_WORLD, &status);
 
-      }  
-  }
-  else
-  {
-    MPI_Send(buf, buf_length, MPI_INT, MASTER, 0,  MPI_COMM_WORLD);
-  }
+			for (int j = 1; j < print_buf[0]; j++)
+			{
+				printf ("rank %d: %d\n", i, print_buf[j]);
+			}
+		}  
+	}
+	else
+	{
+		MPI_Send(buf, buf_length, MPI_INT, MASTER, 0,  MPI_COMM_WORLD);
+	}
 }
 
 
 int
 main (int argc, char** argv)
 {
-  MPI_Init(NULL, NULL);
+	MPI_Init(NULL, NULL);
 
-  char arg[256];
-  int N;
-  int* buf;
-
-  
-  MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-  if (argc < 2)
-  {
-    printf("Arguments error \n");
-    return EXIT_FAILURE;
-  }
-
-  sscanf(argv[1], "%s", arg);
-
-  //array length
-  N = atoi(arg);
-
-  if (N < nprocs)
-  {
-    printf("Number of processes should be at least N\n");
-    return EXIT_FAILURE;
-  }
-
-  //aufteilen, zuerst wird N - (N % nprocs)  gleich verteilt, dann wird der rest auf die Prozesse verteilt
-  int rest = N % nprocs;
-  N = (N - rest)/nprocs;
-
-  //Maximale Länge aller benutzten Arrays
-  int maxbuf_length = N + 2;
-
-  //rest wird verteilt
-  if(rank < rest)
-  {
-     N = N + 1;
-  }
-
-  //N Anzahl der zufälligen Werte
-  //+1 Feld für die Länge des Arrays
-  buf = init(N+1);
+	char arg[256];
+	int N;
+	int* buf;
 
 
-  int first_value;
-  //send first value of MASTER to LAST
-  if(rank == MASTER)
-  {
-    first_value = buf[1];
-    MPI_Send(&first_value, 1, MPI_INT, (nprocs-1), 0, MPI_COMM_WORLD);
-  }
-  if(rank == (nprocs-1))
-  {
-    MPI_Recv(&first_value, 1, MPI_INT, MASTER, 0, MPI_COMM_WORLD, &status);
-  }
+	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  //Ausgabe "Before"
-  ausgabe(buf, maxbuf_length, BEFORE);
-  
+	if (argc < 2)
+	{
+		printf("Arguments error \n");
+		return EXIT_FAILURE;
+	}
 
-  int termination = 1;
+	sscanf(argv[1], "%s", arg);
 
-  //Start circling
-  while(termination)
-  {
-    circle(buf, maxbuf_length);
+	//array length
+	N = atoi(arg);
 
-    //wait for all processes to circle
-    MPI_Barrier(MPI_COMM_WORLD);
+	if (N < nprocs)
+	{
+		printf("Number of processes should be at least N\n");
+		return EXIT_FAILURE;
+	}
 
-    //check for termination condition
-    if(rank == LAST)
-    {
-      if (buf[1] == first_value)
-      {
-          termination = 0;
-      }
-    }
+	//aufteilen, zuerst wird N - (N % nprocs)  gleich verteilt, dann wird der rest auf die Prozesse verteilt
+	int rest = N % nprocs;
+	N = (N - rest)/nprocs;
 
-    //Broadcast termination status
-    MPI_Bcast(&termination, 1, MPI_INT, LAST, MPI_COMM_WORLD);
-  }
+	//Maximale Länge aller benutzten Arrays
+	int maxbuf_length = N + 2;
 
-  //Ausgabe "After"
-  ausgabe(buf, maxbuf_length, AFTER);
+	//rest wird verteilt
+	if(rank < rest)
+	{
+		N = N + 1;
+	}
 
-  MPI_Finalize();
+	//N Anzahl der zufälligen Werte
+	//+1 Feld für die Länge des Arrays
+	buf = init(N+1);
 
-  return EXIT_SUCCESS;
+
+	int first_value;
+	//send first value of MASTER to LAST
+	if(rank == MASTER)
+	{
+		first_value = buf[1];
+		MPI_Send(&first_value, 1, MPI_INT, (nprocs-1), 0, MPI_COMM_WORLD);
+	}
+
+	if(rank == (nprocs-1))
+	{
+		MPI_Recv(&first_value, 1, MPI_INT, MASTER, 0, MPI_COMM_WORLD, &status);
+	}
+
+	//Ausgabe "Before"
+	ausgabe(buf, maxbuf_length, BEFORE);
+
+
+	int termination = 1;
+
+	//Start circling
+	while(termination)
+	{
+		circle(buf, maxbuf_length);
+
+		//wait for all processes to circle
+		MPI_Barrier(MPI_COMM_WORLD);
+
+		//check for termination condition
+		if(rank == LAST)
+		{
+			if (buf[1] == first_value)
+			{
+				termination = 0;
+			}
+		}
+
+		//Broadcast termination status
+		MPI_Bcast(&termination, 1, MPI_INT, LAST, MPI_COMM_WORLD);
+	}
+
+	//Ausgabe "After"
+	ausgabe(buf, maxbuf_length, AFTER);
+
+	free(buf);
+	MPI_Finalize();
+
+	return EXIT_SUCCESS;
 }
