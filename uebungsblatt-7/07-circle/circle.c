@@ -38,8 +38,7 @@ init (int N)
 
 void
 circle (int* buf, int count)
-{ 	
-	printf("%i\n", buf[1]);
+{ 
 	MPI_Request request;
 
 	int next, previous;
