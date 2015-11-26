@@ -1,0 +1,6 @@
+#!/bin/sh
+
+#SBATCH -N 1 -n 12
+#SBATCH --output=circle.out
+
+mpiexec ./circle 24 12
