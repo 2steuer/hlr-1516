@@ -1,0 +1,91 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% This is a simple template for a LaTeX document using the "article" class.
+% See "book", "report", "letter" for other types of document.
+
+\documentclass[11pt]{article} % use larger type; default would be 10pt
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+%%% Examples of Article customizations
+% These packages are optional, depending whether you want the features they provide.
+% See the LaTeX Companion or other references for full information.
+
+%%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+% \geometry{margin=2in} % for example, change the margins to 2 inches all round
+% \geometry{landscape} % set up the page for landscape
+%   read geometry.pdf for detailed page layout information
+
+\usepackage{graphicx} % support the \includegraphics command and options
+
+% \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+
+%%% PACKAGES
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+% These packages are all incorporated in the memoir class to one degree or another...
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} % customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+%%% END Article customizations
+
+%%% The "real" document content comes below...
+
+\title{Parallelisierungsschema}
+\author{Merlin Steuer, Merlin Koglin, Timon Vosberg}
+\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed 
+
+\begin{document}
+\maketitle
+\tableofcontents
+\section{Datenaufteilung}
+
+Die Aufteilung der Daten sollte so erfolgen, dass je Prozess möglichst große Blöcke am Stück bearbeitet werden können. So ist eine Zuweisung jeder n-ten Zeile der Matrix für den Prozess n zwar in Bezug auf die Lastverteilung gut, jedoch muss der Prozess dann in jedem einzelnen Berechnungsschritt Daten von der darüber- und darunterliegenden Zeile aus einem anderen Prozess anfragen. Dies ist insofern nachteilig, als dass die Latenz der Kommunikation zwischen zwei Prozessen deutlich größer sein wird, als jene zwischen Threads. In diesem Falle müsste ein Prozess sogar für jeden Berechnungsschritt mit zwei verschiedenen Prozessen Kommunizieren - der Overhead wäre dann nicht mehr zu vernachlässigen.
+
+Sinnvoll wäre also eine Aufteilung in Blöcke zu je $\frac{N}{n}$ Zeilen, wobei N die Anzahl der gesamten Zeilen, sowie n die Anzahl der Prozesse ist. Ganz allgemein ist das Anwenden von Zwischen-Prozess-Kommunikation nur sinnvoll, wenn $N >> n$. Somit ist auch der Fehler zu Vernachlässigen, wenn sich die Zeilen nicht ganzzahlig durch die Anzahl der Prozesse teilen lässt - nichts desto Trotz muss dieser Fall aber natürlich beachtet werden.
+
+\section{Parallelisierungsschemata}
+
+\subsection{Jacobi}
+
+Da beim Jacobi-Verfahren die Berechnungen immer auf Basis der vorherigen Berechnungen statt finden (Gesamtschrittverfahren) hat es Sinn, stets zu Beginn einer Iteration alle benötigten Daten von den Nachbarprozessen zu holen. Dies außerdem den Vorteil, dass alle Prozesse gleichzeitig an einer Iteration arbeiten können und kein Prozess auf das Abschließen der Berechnungen des Vorherigen Prozesses warten muss. Nach jeder Iteration sollten die Prozesse jedoch immer synchronisieren.
+
+\subsection{Gauß-Seidel}
+
+Aufgrund der Tatsache, dass es sich beim Gauß-Seidel Verfahren um ein Einzelschrittverfahren handelt, funktioniert die Sache hier nicht ganz so einfach. Wir gehen die Matrix von oben-links bis unten-rechts durch - Entsprechend benötigt ein Prozess vor der Berechnung seiner Sub-Matrix stets die Daten des Prozesses, welcher die Sub-Matrix direkt über sich hat. Dies hat zur Folge, dass ein Prozess $p$ immer auf die Vollendung der Berechnung des Prozesses $p-1$ warten muss. Sobald $p$ aber seine Daten an $p+1$ abgegeben hat, kann er direkt mit der nächsten Iteration fortfahren, denn idealerweise hat in der Zwischenzeit der Prozess $p-1$ die nächste Berechnung schon fertig. Dieses Verfahren lohnt vor allem für Berechnungen mit sehr vielen Iterationen, welche aber an sich nicht allzu lang dauern, da der Prozess $n-1$ ($n$ sei die Gesamtzahl der Prozesse, Zählung beginnt bei 0) dem Prozess $0$ immer $n$ Berechnungsschritte hinterher läuft. Dies hat vor allem am Anfang der Berechnung eine Verzögerung zur Folge.
+
+\section{Abbruchkriterien}
+\subsection{Jacobi}
+\subsubsection{Iterationen}
+Der Abbruch nach Iterationen ist beim Jacobi Verfahren relativ einfach, da sich alle Prozesse stets in der selben Iteration befinden (Synchronisation am Ende jeder Iteration). Hier muss ein Prozess also einfach nach der letzten Iteration aufhören.
+\subsubsection{Genauigkeit}
+Am Ende jeder Iteration berechnet jeder Prozess sein eigenes maxresiduum, welches dann mittels MPI-Reduce auf ein allg. maxresiduum zurück geführt wird (bspw. an Prozess 0). Ist die Abbruchbedingung erreicht, so teilt dieser Prozess es allen anderen mit und die Berechnung wird terminiert.
+\subsection{Gauß-Seidel}
+\subsubsection{Iterationen}
+Beim Gauß-Seidel Verfahren ist etwas komplizierter. Da ein Prozess gegenüber dem ersten Prozess immer $p$ Schritte hinterher läuft, muss der erste Prozess bei der richtigen Anzahl der Iterationen aufhören zu berechnen, dann allerdings bis zu $n$ Iterationslängen warten, bis auch der letzte Prozess diese Iteration vollständig durchgeführt hat.
+\subsubsection{Genauigkeit}
+Auch in diesem Falle teilt jeder Prozess nach jeder Berechnung sein residuum einem Haupt-Prozess mit. Hier gestaltet sich das management jedoch etwas komplizierter, da wegen der verschiedenen Iterationszahlen nie zwei Prozesse im  selben Schritt sind - insbesondere nie der erste (Haupt-)Prozess mit einem anderen. Somit fiele MPI-Reduce aus, jeder Prozess müsste also sowohl seine Iterationszahl als auch sein residuum mitteilen, der Hauptprozess wird dieses dann Verarbeiten und ggf. terminieren.
+\end{document}
