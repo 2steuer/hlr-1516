@@ -425,30 +425,27 @@ calculateJacobi (struct calculation_arguments const* arguments, struct calculati
 		m1 = m2;
 		m2 = i;
 		
-		//reduce maxresiduum
-		MPI_Reduce(&maxresiduum, &globalresiduum, 1, MPI_DOUBLE, MPI_MAX, MASTER, MPI_COMM_WORLD);
+		//reduce maxresiduum, broadcast afterwards
+		MPI_Allreduce(&maxresiduum, &globalresiduum, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
 
-		if(rank == MASTER)
+		
+		results->stat_iteration++;
+		results->stat_precision = globalresiduum;
+
+		/* check for stopping calculation, depending on termination method */
+		if (options->termination == TERM_PREC)
 		{
-			results->stat_iteration++;
-			results->stat_precision = globalresiduum;
-
-			/* check for stopping calculation, depending on termination method */
-			if (options->termination == TERM_PREC)
+			if (globalresiduum < options->term_precision)
 			{
-				if (globalresiduum < options->term_precision)
-				{
-					term_iteration = 0;
-				}
-			}
-			else if (options->termination == TERM_ITER)
-			{
-				term_iteration--;
+				term_iteration = 0;
 			}
 		}
+		else if (options->termination == TERM_ITER)
+		{
+			term_iteration--;
+		}
+		
 
-		//Broadcast term_iteration
-		MPI_Bcast(&term_iteration, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
 	}
 	
 	results->m = m2;
