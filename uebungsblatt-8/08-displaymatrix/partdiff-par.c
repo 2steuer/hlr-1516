@@ -368,8 +368,9 @@ calculateJacobi (struct calculation_arguments const* arguments, struct calculati
 		double** Matrix_Out = arguments->Matrix[m1];
 		double** Matrix_In  = arguments->Matrix[m2];
 
-		//if only one process no message exchange needed
-		if(size > 1)
+		/* if there is only one process no message exchange is needed,		*/ 
+		/* if rank > N - 1 no message exchange needed						*/
+		if(size > 1 && rank < (N-1))
 		{
 			//MASTER does not need the previous last row
 			if(rank != MASTER)
@@ -377,9 +378,10 @@ calculateJacobi (struct calculation_arguments const* arguments, struct calculati
 				MPI_Send(Matrix_In[FIRST_ROW], NUM_COLS, MPI_DOUBLE, PREVIOUS_RANK, 0, MPI_COMM_WORLD);
 				MPI_Recv(Matrix_In[PREVIOUS_LROW], NUM_COLS, MPI_DOUBLE, PREVIOUS_RANK, 0, MPI_COMM_WORLD, &status);		
 			}
+
 			//LAST does not need the next first row
 			if(rank != LAST)
-			{
+			{	
 				MPI_Recv(Matrix_In[NEXT_FROW], NUM_COLS, MPI_DOUBLE, NEXT_RANK, 0, MPI_COMM_WORLD, &status);	
 				MPI_Send(Matrix_In[LAST_ROW], NUM_COLS, MPI_DOUBLE, NEXT_RANK, 0, MPI_COMM_WORLD);
 			}
@@ -425,30 +427,24 @@ calculateJacobi (struct calculation_arguments const* arguments, struct calculati
 		m1 = m2;
 		m2 = i;
 		
-		//reduce maxresiduum
-		MPI_Reduce(&maxresiduum, &globalresiduum, 1, MPI_DOUBLE, MPI_MAX, MASTER, MPI_COMM_WORLD);
+		//reduce maxresiduum, broadcast afterwards
+		MPI_Allreduce(&maxresiduum, &globalresiduum, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
 
-		if(rank == MASTER)
+		results->stat_iteration++;
+		results->stat_precision = globalresiduum;
+
+		/* check for stopping calculation, depending on termination method */
+		if (options->termination == TERM_PREC)
 		{
-			results->stat_iteration++;
-			results->stat_precision = globalresiduum;
-
-			/* check for stopping calculation, depending on termination method */
-			if (options->termination == TERM_PREC)
+			if (globalresiduum < options->term_precision)
 			{
-				if (globalresiduum < options->term_precision)
-				{
-					term_iteration = 0;
-				}
-			}
-			else if (options->termination == TERM_ITER)
-			{
-				term_iteration--;
+				term_iteration = 0;
 			}
 		}
-
-		//Broadcast term_iteration
-		MPI_Bcast(&term_iteration, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
+		else if (options->termination == TERM_ITER)
+		{
+			term_iteration--;
+		}
 	}
 	
 	results->m = m2;
@@ -505,7 +501,7 @@ displayStatistics (struct calculation_arguments const* arguments, struct calcula
 	printf("\n");
 	printf("Anzahl Iterationen: %" PRIu64 "\n", results->stat_iteration);
 	printf("Norm des Fehlers:   %e\n", results->stat_precision);
-	printf("World Size:         %i\n", size);
+	printf("Processes used:     %i\n", size);
 	printf("\n");
 }
 
@@ -650,9 +646,16 @@ main (int argc, char** argv)
 	}
 	arguments.to = to;
 	arguments.from = from;
+	
+	/* at least we only need N - 1 processes for calculation */
+	if((unsigned int)size > (arguments.N -1))
+	{
+		size = (arguments.N - 1);
+	}
+
 
 	//calculate Number of Rows
-	arguments.numberOfRows = to - from + 1;
+	arguments.numberOfRows = ((to - from + 1) > 0 ) ? (to - from + 1) : 0;
 
 	allocateMatrices(&arguments);        
 	initMatrices(&arguments, &options, rank, size);            
