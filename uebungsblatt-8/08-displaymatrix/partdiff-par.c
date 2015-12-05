@@ -505,16 +505,7 @@ displayStatistics (struct calculation_arguments const* arguments, struct calcula
 	printf("\n");
 }
 
-/****************************************************************************/
-/** Beschreibung der Funktion DisplayMatrix:                               **/
-/**                                                                        **/
-/** Die Funktion DisplayMatrix gibt eine Matrix                            **/
-/** in einer "ubersichtlichen Art und Weise auf die Standardausgabe aus.   **/
-/**                                                                        **/
-/** Die "Ubersichtlichkeit wird erreicht, indem nur ein Teil der Matrix    **/
-/** ausgegeben wird. Aus der Matrix werden die Randzeilen/-spalten sowie   **/
-/** sieben Zwischenzeilen ausgegeben.                                      **/
-/****************************************************************************/
+
 /**
  * rank and size are the MPI rank and size, respectively.
  * from and to denote the global(!) range of lines that this process is responsible for.
@@ -527,7 +518,7 @@ displayStatistics (struct calculation_arguments const* arguments, struct calcula
  */
 static
 void
-DisplayMatrix (struct calculation_arguments* arguments, struct calculation_results* results, struct options* options, int rank, int size, int from, int to)
+DisplayMatrixMPI (struct calculation_arguments* arguments, struct calculation_results* results, struct options* options, int rank, int size, int from, int to)
 {
   int const elements = 8 * options->interlines + 9;
 
@@ -595,6 +586,40 @@ DisplayMatrix (struct calculation_arguments* arguments, struct calculation_resul
   fflush(stdout);
 }
 
+/****************************************************************************/
+/** Beschreibung der Funktion DisplayMatrix:                               **/
+/**                                                                        **/
+/** Die Funktion DisplayMatrix gibt eine Matrix                            **/
+/** in einer "ubersichtlichen Art und Weise auf die Standardausgabe aus.   **/
+/**                                                                        **/
+/** Die "Ubersichtlichkeit wird erreicht, indem nur ein Teil der Matrix    **/
+/** ausgegeben wird. Aus der Matrix werden die Randzeilen/-spalten sowie   **/
+/** sieben Zwischenzeilen ausgegeben.                                      **/
+/****************************************************************************/
+static
+void
+DisplayMatrix (struct calculation_arguments* arguments, struct calculation_results* results, struct options* options)
+{
+	int x, y;
+
+	double** Matrix = arguments->Matrix[results->m];
+
+	int const interlines = options->interlines;
+
+	printf("Matrix:\n");
+
+	for (y = 0; y < 9; y++)
+	{
+		for (x = 0; x < 9; x++)
+		{
+			printf ("%7.4f", Matrix[y * (interlines + 1)][x * (interlines + 1)]);
+		}
+
+		printf ("\n");
+	}
+
+	fflush (stdout);
+}
 
 
 /* ************************************************************************ */
@@ -617,28 +642,35 @@ main (int argc, char** argv)
 	struct calculation_arguments arguments;
 	struct calculation_results results;
 	
+	/* Parameter nur einmal abfragen */
 	if(rank == 0)
 	{
 		AskParams(&options, argc, argv);   
 	}
 	MPI_Bcast(&options, (sizeof(options)), MPI_BYTE, MASTER, MPI_COMM_WORLD);
-        
+        	
 	initVariables(&arguments, &results, &options);          
 
-	//Aufteilen bis auf rest
+	/* Damit allocation + initialization richtig läuft, wird für GS size = 1 gesetzt */
+	if(options.method == METH_GAUSS_SEIDEL)
+	{
+		size = 1;
+	}
+
+	/* Aufteilen bis auf rest */
 	int N_part = arguments.N;
 	int lines = N_part - 1;
 	rest = lines % size;
 	N_part = (lines - rest) / size;
 
-	//globale zeilennummer berechnen, hier wird der rest beachtet
-	//offset ist (rank + 1) für rank < rest, steigt also linear mit steigendem rang 
+	/* globale zeilennummer berechnen, hier wird der rest beachtet						*/
+	/* offset ist (rank + 1) für rank < rest, steigt also linear mit steigendem rang 	*/
 	if(rank < rest)
 	{
 		from = N_part * rank 		+ rank + 1;
 		to = N_part * (rank + 1) 	+ (rank + 1);
 	}
-	//offset hier ist rest also die der maximale offset von oben
+	/* offset hier ist rest also die der maximale offset von oben */
 	else
 	{
 		from = N_part * rank 		+ rest + 1;
@@ -647,12 +679,18 @@ main (int argc, char** argv)
 	arguments.to = to;
 	arguments.from = from;
 	
+	
 	/* at least we only need N - 1 processes for calculation */
 	if((unsigned int)size > (arguments.N -1))
 	{
 		size = (arguments.N - 1);
-	}
 
+		if(rank == MASTER )
+		{
+			printf("\nWarning, you are using more processes than rows.\n This can slow down the calculation process! \n\n");
+		}
+
+	} 
 
 	//calculate Number of Rows
 	arguments.numberOfRows = ((to - from + 1) > 0 ) ? (to - from + 1) : 0;
@@ -660,12 +698,8 @@ main (int argc, char** argv)
 	allocateMatrices(&arguments);        
 	initMatrices(&arguments, &options, rank, size);            
 
-	if(rank == MASTER && arguments.N < (unsigned int)size)
-	{
-		printf("\n Warning, you are using more processes than rows.\n This can slow down the calculation process! \n\n");
-	}
-	
 	gettimeofday(&start_time, NULL);                   /*  start timer         */
+
 
 	if (options.method == METH_JACOBI )
 	{
@@ -673,21 +707,31 @@ main (int argc, char** argv)
 	}
 	else
 	{	
-		if(size > 1 && rank == MASTER)
-		{
-			printf("\nGS wird nur sequentiell berechnet! \n");
+		/* GS berechnet nur MASTER */
+		if(rank == MASTER)
+		{	
+			printf("\nGS wird nur sequentiell berechnet! \n");		
+			calculate(&arguments, &results, &options);
 		}
-		calculate(&arguments, &results, &options);
 	}
 
 	gettimeofday(&comp_time, NULL);                   /*  stop timer          */
 
+	/* only once */
 	if(rank == MASTER)
 	{
 		displayStatistics(&arguments, &results, &options, size);
-	}
+	} 
 
-	DisplayMatrix(&arguments, &results, &options, rank, size, from, to);
+	/* GS macht alte ausgabe */
+	if((options.method == METH_GAUSS_SEIDEL) && (rank == MASTER))
+	{	
+		DisplayMatrix(&arguments, &results, &options);
+	} 
+	else
+	{	
+		DisplayMatrixMPI(&arguments, &results, &options, rank, size, from, to);
+	}
 
 	freeMatrices(&arguments);                                       /*  free memory     */
 
