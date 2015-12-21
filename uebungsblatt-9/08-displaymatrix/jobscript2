@@ -1,0 +1,21 @@
+#!/bin/sh
+
+#SBATCH -N 2
+#SBATCH--ntasks-per-node 12
+#SBATCH --output=circle.out
+
+
+mpiexec ./partdiff-par 1 1 0 1 2 47 > comparison.out
+mpiexec ./partdiff-par 1 1 0 2 2 48 > comparison.out
+
+mpiexec ./partdiff-par 1 1 0 1 1 1e-4 > comparison.out
+mpiexec ./partdiff-par 1 1 0 2 1 1e-4 > comparison.out
+
+mpiexec ./partdiff-par 1 1 400 2 1 1e-4 >> comparison.out
+
+mpiexec ./partdiff-par 1 1 400 2 2 312 > comparison.out
+./partdiff-par 1 1 400 2 2 312 >> comparison.out
+
+mpiexec ./partdiff-par 1 2 400 2 1 1e-12 >> comparison.out
+./partdiff-par 1 1 400 2 1 1e-12 >> comparison.out
+
