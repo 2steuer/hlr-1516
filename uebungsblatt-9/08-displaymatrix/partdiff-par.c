@@ -252,6 +252,7 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 	int iteration_count = 1;
 	int precisionStateCurrent = PRECISION_NOT_REACHED;
 	int precisionStatePrevious = (rank == MASTER) ? PRECISION_REACHED : PRECISION_NOT_REACHED;
+	int stopSignal = 0;
 	int cnt = 0;
 
 
@@ -364,6 +365,11 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 				{
 					precisionStateCurrent = STOP_CALCULATION;
 				}
+
+				if(rank == MASTER && stopSignal == 1)
+				{
+					precisionStateCurrent = STOP_CALCULATION;
+				}
 			}
 
 			/* Send the first row, not required for MASTER process and after the last iteration */
@@ -376,7 +382,7 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 			   This is nonblocking, so the final iteration count may fluctuate */
 			if(options->termination == TERM_PREC && rank == MASTER && cnt == 0)
 			{
-				MPI_Irecv(&precisionStatePrevious, 1, MPI_INT, LAST, 2, MPI_COMM_WORLD, &request);
+				MPI_Irecv(&stopSignal, 1, MPI_INT, LAST, 2, MPI_COMM_WORLD, &request);
 
 				/* only one time */
 				cnt++;
@@ -398,17 +404,11 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 			
 			/* If the last process reach the precision state PRECISION_REACHED, all processes have reached this state.
 			   It sends now a stop signal to the MASTER process and afterwards this state is getting passed to following processes. */
-			if(options->termination == TERM_PREC && rank == LAST && precisionStateCurrent == PRECISION_REACHED && cnt == 0)
+			if(options->termination == TERM_PREC && rank == LAST && precisionStateCurrent == PRECISION_REACHED && stopSignal == 0)
 			{
-				precisionStateCurrent = STOP_CALCULATION;
+				stopSignal = 1;
 
-				MPI_Isend(&precisionStateCurrent, 1, MPI_INT, MASTER, 2, MPI_COMM_WORLD, &request);
-
-				/* only one time */
-				cnt++;
-
-				/* LAST should calculate one more time, it will get the stop state again from the previous process */
-				precisionStateCurrent = PRECISION_REACHED;
+				MPI_Isend(&stopSignal, 1, MPI_INT, MASTER, 2, MPI_COMM_WORLD, &request);
 			}
 
 		}
