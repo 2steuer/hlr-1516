@@ -229,109 +229,9 @@ initMatrices (struct calculation_arguments* arguments, struct options const* opt
 		}
 	}
 }
+
 /* ************************************************************************ */
-/* calculate: solves the equation                                           */
-/* ************************************************************************ */
-static
-void
-calculate (struct calculation_arguments const* arguments, struct calculation_results *results, struct options const* options)
-{
-	int i, j;                                   /* local variables for loops  */
-	int m1, m2;                                 /* used as indices for old and new matrices       */
-	double star;                                /* four times center value minus 4 neigh.b values */
-	double residuum;                            /* residuum of current iteration                  */
-	double maxresiduum;                         /* maximum residuum value of a slave in iteration */
-
-	int const N = arguments->N;
-	double const h = arguments->h;
-
-	double pih = 0.0;
-	double fpisin = 0.0;
-
-	int term_iteration = options->term_iteration;
-
-	/* initialize m1 and m2 depending on algorithm */
-	if (options->method == METH_JACOBI)
-	{
-		m1 = 0;
-		m2 = 1;
-	}
-	else
-	{
-		m1 = 0;
-		m2 = 0;
-	}
-
-	if (options->inf_func == FUNC_FPISIN)
-	{
-		pih = PI * h;
-		fpisin = 0.25 * TWO_PI_SQUARE * h * h;
-	}
-
-	while (term_iteration > 0)
-	{
-		double** Matrix_Out = arguments->Matrix[m1];
-		double** Matrix_In  = arguments->Matrix[m2];
-
-		maxresiduum = 0;
-
-		/* over all rows */
-		for (i = 1; i < N; i++)
-		{
-			double fpisin_i = 0.0;
-
-			if (options->inf_func == FUNC_FPISIN)
-			{
-				fpisin_i = fpisin * sin(pih * (double)i);
-			}
-
-			/* over all columns */
-			for (j = 1; j < N; j++)
-			{
-				star = 0.25 * (Matrix_In[i-1][j] + Matrix_In[i][j-1] + Matrix_In[i][j+1] + Matrix_In[i+1][j]);
-
-				if (options->inf_func == FUNC_FPISIN)
-				{
-					star += fpisin_i * sin(pih * (double)j);
-				}
-
-				if (options->termination == TERM_PREC || term_iteration == 1)
-				{
-					residuum = Matrix_In[i][j] - star;
-					residuum = (residuum < 0) ? -residuum : residuum;
-					maxresiduum = (residuum < maxresiduum) ? maxresiduum : residuum;
-				}
-
-				Matrix_Out[i][j] = star;
-			}
-		}
-
-		results->stat_iteration++;
-		results->stat_precision = maxresiduum;
-
-		/* exchange m1 and m2 */
-		i = m1;
-		m1 = m2;
-		m2 = i;
-
-		/* check for stopping calculation, depending on termination method */
-		if (options->termination == TERM_PREC)
-		{
-			if (maxresiduum < options->term_precision)
-			{
-				term_iteration = 0;
-			}
-		}
-		else if (options->termination == TERM_ITER)
-		{
-			term_iteration--;
-		}
-	}
-
-	results->m = m2;
-}
-/* ************************************************************************ */
-/* calculate: solves the equation                                           */
+/* calculate: solves the equation     										*/
 /* ************************************************************************ */
 static
 void
@@ -473,7 +373,7 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 			}
 
 			/* Waiting for the LAST process to receive a stop signal, but only one time
-			   This is nonblocking, so the final iteration count may flucuate */
+			   This is nonblocking, so the final iteration count may fluctuate */
 			if(options->termination == TERM_PREC && rank == MASTER && cnt == 0)
 			{
 				MPI_Irecv(&precisionStatePrevious, 1, MPI_INT, LAST, 2, MPI_COMM_WORLD, &request);
@@ -497,7 +397,7 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 			}
 			
 			/* If the last process reach the precision state PRECISION_REACHED, all processes have reached this state.
-			   So sends now a stop signal to the MASTER process and afterwards this state is getting passed to following processes. */
+			   It sends now a stop signal to the MASTER process and afterwards this state is getting passed to following processes. */
 			if(options->termination == TERM_PREC && rank == LAST && precisionStateCurrent == PRECISION_REACHED && cnt == 0)
 			{
 				precisionStateCurrent = STOP_CALCULATION;
@@ -818,40 +718,6 @@ DisplayMatrixMPI (struct calculation_arguments* arguments, struct calculation_re
   fflush(stdout);
 }
 
-/****************************************************************************/
-/** Beschreibung der Funktion DisplayMatrix:                               **/
-/**                                                                        **/
-/** Die Funktion DisplayMatrix gibt eine Matrix                            **/
-/** in einer "ubersichtlichen Art und Weise auf die Standardausgabe aus.   **/
-/**                                                                        **/
-/** Die "Ubersichtlichkeit wird erreicht, indem nur ein Teil der Matrix    **/
-/** ausgegeben wird. Aus der Matrix werden die Randzeilen/-spalten sowie   **/
-/** sieben Zwischenzeilen ausgegeben.                                      **/
-/****************************************************************************/
-static
-void
-DisplayMatrix (struct calculation_arguments* arguments, struct calculation_results* results, struct options* options)
-{
-	int x, y;
-
-	double** Matrix = arguments->Matrix[results->m];
-
-	int const interlines = options->interlines;
-
-	printf("Matrix:\n");
-
-	for (y = 0; y < 9; y++)
-	{
-		for (x = 0; x < 9; x++)
-		{
-			printf ("%7.4f", Matrix[y * (interlines + 1)][x * (interlines + 1)]);
-		}
-
-		printf ("\n");
-	}
-
-	fflush (stdout);
-}
 
 
 /* ************************************************************************ */
