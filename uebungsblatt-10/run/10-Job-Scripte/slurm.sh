@@ -1,6 +1,7 @@
 #!/bin/bash
 shopt -n nullglob
-for f in *.job
+FILES=slurm2/*.job
+for f in $FILES
 do
         sbatch f
 done
