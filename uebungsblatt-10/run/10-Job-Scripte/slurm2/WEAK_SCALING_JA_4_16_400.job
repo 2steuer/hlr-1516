@@ -4,6 +4,6 @@
 #SBATCH -N 4 --tasks-per-node=4
 #SBATCH --error=WEAK_SCALING_JA_4_16_400.err --output=WEAK_SCALING_JA_4_16_400.out
 
-mpiexec -n 16 ../../pde/partdiff.par 1 2 400 2 2 1500
-mpiexec -n 16 ../../pde/partdiff.par 1 2 400 2 2 1500
-mpiexec -n 16 ../../pde/partdiff.par 1 2 400 2 2 1500
+mpiexec -n 16 ../../pde/partdiff-par 1 2 400 2 2 1500
+mpiexec -n 16 ../../pde/partdiff-par 1 2 400 2 2 1500
+mpiexec -n 16 ../../pde/partdiff-par 1 2 400 2 2 1500

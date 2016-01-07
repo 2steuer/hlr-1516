@@ -4,6 +4,6 @@
 #SBATCH -N 8 --tasks-per-node=8
 #SBATCH --error=WEAK_SCALING_GS_8_64_800.err --output=WEAK_SCALING_GS_8_64_800.out
 
-mpiexec -n 64 ../../pde/partdiff.par 1 1 800 2 2 1500
-mpiexec -n 64 ../../pde/partdiff.par 1 1 800 2 2 1500
-mpiexec -n 64 ../../pde/partdiff.par 1 1 800 2 2 1500
+mpiexec -n 64 ../../pde/partdiff-par 1 1 800 2 2 1500
+mpiexec -n 64 ../../pde/partdiff-par 1 1 800 2 2 1500
+mpiexec -n 64 ../../pde/partdiff-par 1 1 800 2 2 1500

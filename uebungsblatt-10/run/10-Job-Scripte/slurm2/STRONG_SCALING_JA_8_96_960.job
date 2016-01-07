@@ -4,6 +4,6 @@
 #SBATCH -N 8 --tasks-per-node=12
 #SBATCH --error=STRONG_SCALING_JA_8_96_960.err --output=STRONG_SCALING_JA_8_96_960.out
 
-mpiexec -n 96 ../../pde/partdiff.par 1 2 960 2 2 1000
-mpiexec -n 96 ../../pde/partdiff.par 1 2 960 2 2 1000
-mpiexec -n 96 ../../pde/partdiff.par 1 2 960 2 2 1000
+mpiexec -n 96 ../../pde/partdiff-par 1 2 960 2 2 1000
+mpiexec -n 96 ../../pde/partdiff-par 1 2 960 2 2 1000
+mpiexec -n 96 ../../pde/partdiff-par 1 2 960 2 2 1000
