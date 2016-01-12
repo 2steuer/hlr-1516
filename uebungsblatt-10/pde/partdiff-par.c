@@ -370,7 +370,7 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 				if(precisionStatePrevious == STOP_CALCULATION)
 				{
 					precisionStateCurrent = STOP_CALCULATION;
-					printf("rank:  has now STOP_CALCULATION\n", rank);
+					printf("rank:%i  has now STOP_CALCULATION\n", rank);
 
 				}
 
