@@ -257,11 +257,17 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 
 
 	MPI_Status status;
-	MPI_Request request;
+	//MPI_Request request;
+
+	int stop_tag = 2;
+	int stop_flag = 0;
+	MPI_Status stop_status;
 
 	double pih = 0.0;
 	double fpisin = 0.0;
 	double globalresiduum = 0;
+
+
 
 	/* initialize m1 and m2 */
 	m1 = 0;
@@ -382,10 +388,14 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 			   This is nonblocking, so the final iteration count may fluctuate */
 			if(options->termination == TERM_PREC && rank == MASTER && cnt == 0)
 			{
-				MPI_Irecv(&stopSignal, 1, MPI_INT, LAST, 2, MPI_COMM_WORLD, &request);
+				MPI_Iprobe(LAST, stop_tag, MPI_COMM_WORLD, &stop_flag, &stop_status);
+				if(stop_flag)
+				{
+					MPI_Recv(&stopSignal, 1, MPI_INT, LAST, stop_tag, MPI_COMM_WORLD, &stop_status);
+					cnt++;
+				}
 
 				/* only one time */
-				cnt++;
 			}
 			
 
@@ -408,7 +418,7 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 			{
 				stopSignal = 1;
 
-				MPI_Isend(&stopSignal, 1, MPI_INT, MASTER, 2, MPI_COMM_WORLD, &request);
+				MPI_Send(&stopSignal, 1, MPI_INT, MASTER, stop_tag, MPI_COMM_WORLD);
 			}
 
 		}
