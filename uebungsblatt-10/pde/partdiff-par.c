@@ -387,7 +387,7 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 			}
 
 			/* Send the first row, not required for MASTER process and after the last iteration */
-			if((rank != MASTER) && (iteration_count != (int)options->term_iteration))
+			if((rank != MASTER) && (iteration_count != (int)options->term_iteration) && (precisionStateCurrent != STOP_CALCULATION))
 			{				
 				MPI_Send(Matrix_Out[FIRST_ROW], NUM_COLS, MPI_DOUBLE, PREVIOUS_RANK, 0, MPI_COMM_WORLD);	
 			}
