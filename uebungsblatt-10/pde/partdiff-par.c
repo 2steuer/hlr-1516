@@ -391,7 +391,10 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 				MPI_Iprobe(LAST, stop_tag, MPI_COMM_WORLD, &stop_flag, &stop_status);
 				if(stop_flag)
 				{
+					printf("Recieving stopSignal\n");
 					MPI_Recv(&stopSignal, 1, MPI_INT, LAST, stop_tag, MPI_COMM_WORLD, &stop_status);
+					printf("stopSignal is now: %i\n", stopSignal);
+
 					cnt++;
 				}
 
@@ -419,6 +422,7 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 				stopSignal = 1;
 
 				MPI_Send(&stopSignal, 1, MPI_INT, MASTER, stop_tag, MPI_COMM_WORLD);
+				printf("Sending stopSignal\n");
 			}
 
 		}
