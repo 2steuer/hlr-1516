@@ -303,11 +303,6 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 				if(options->termination == TERM_PREC)
 				{
 					MPI_Recv(&precisionStatePrevious, 1, MPI_INT, PREVIOUS_RANK, 0, MPI_COMM_WORLD, &status);
-					if(precisionStatePrevious == STOP_CALCULATION)
-					{
-					printf("PREV State STOP_CALCULATION received\n, i am rank: %i", rank);
-
-					}
 				}
 			}	
 
@@ -375,14 +370,11 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 				if(precisionStatePrevious == STOP_CALCULATION)
 				{
 					precisionStateCurrent = STOP_CALCULATION;
-					printf("rank:%i  has now STOP_CALCULATION\n", rank);
-
 				}
 
 				if(rank == MASTER && stopSignal == 1)
 				{
 					precisionStateCurrent = STOP_CALCULATION;
-					printf("Master has now STOP_CALCULATION\n");
 				}
 			}
 
@@ -399,9 +391,7 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 				MPI_Iprobe(LAST, stop_tag, MPI_COMM_WORLD, &stop_flag, &stop_status);
 				if(stop_flag)
 				{
-					printf("Recieving stopSignal\n");
 					MPI_Recv(&stopSignal, 1, MPI_INT, LAST, stop_tag, MPI_COMM_WORLD, &stop_status);
-					printf("stopSignal is now: %i\n", stopSignal);
 
 					cnt++;
 				}
@@ -419,10 +409,6 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 				if(options->termination == TERM_PREC)
 				{
 					MPI_Send(&precisionStateCurrent, 1, MPI_INT, NEXT_RANK, 0, MPI_COMM_WORLD);
-					if(precisionStateCurrent == STOP_CALCULATION)
-					{
-						printf("rank: %i  has send current state: STOP_CALCULATION\n", rank);
-					}
 				}	
 
 			}
@@ -434,7 +420,6 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 				stopSignal = 1;
 
 				MPI_Send(&stopSignal, 1, MPI_INT, MASTER, stop_tag, MPI_COMM_WORLD);
-				printf("Sending stopSignal\n");
 			}
 
 		}
