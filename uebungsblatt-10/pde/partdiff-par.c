@@ -361,7 +361,7 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 				/* the current precision state is switched to PRECISION_REACHED when
 						the maxresiduum is small as requested
 				        AND the previous process already has reached the requested maxresiduum */
-				if (maxresiduum < options->term_precision && precisionStatePrevious == PRECISION_REACHED && precisionStateCurrent == PRECISION_NOT_REACHED)
+				if (maxresiduum < options->term_precision && (precisionStatePrevious == PRECISION_REACHED && precisionStateCurrent == PRECISION_NOT_REACHED))
 				{
 					precisionStateCurrent = PRECISION_REACHED;
 				}
@@ -370,11 +370,14 @@ calculateGS (struct calculation_arguments const* arguments, struct calculation_r
 				if(precisionStatePrevious == STOP_CALCULATION)
 				{
 					precisionStateCurrent = STOP_CALCULATION;
+					printf("rank:  has now STOP_CALCULATION\n", rank);
+
 				}
 
 				if(rank == MASTER && stopSignal == 1)
 				{
 					precisionStateCurrent = STOP_CALCULATION;
+					printf("Master has now STOP_CALCULATION\n");
 				}
 			}
 
