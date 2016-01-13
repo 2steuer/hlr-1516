@@ -1,0 +1,20 @@
+set terminal pdfcairo colour enh size 15cm,10cm
+set output 'COMMUNICATION_JA_laufzeit.pdf
+set title "COMMUNICATION Jacobi"
+
+
+set xlabel "Anzahl der Knoten (10 Prozesse)"
+set ylabel "Laufzeit/Sekunden"
+set key top right
+
+set grid
+
+unset logscale x
+set xtics auto nomirror
+set ytics auto nomirror
+
+set yrange[0:70]
+set xrange[0:11]
+
+
+plot "COMMUNICATION_A_JA.dat" using 2:4 w l lt rgb "blue" lw 3, "COMMUNICATION_A_JA_run2.dat" using 2:4 w l lt rgb "green" lw 3 

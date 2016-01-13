@@ -1,0 +1,10 @@
+#!/bin/bash
+ gnuplot <<EOF
+ 			load "Laufzeit_weak_JA_gnu"
+        	load "Laufzeit_weak_GS_gnu"
+        	load "Laufzeit_strong_JA_gnu"
+        	load "Laufzeit_strong_GS_gnu"
+        	load "Laufzeit_commu_JA_gnu"
+        	load "Laufzeit_commu_GS_gnu"
+        	exit
+EOF

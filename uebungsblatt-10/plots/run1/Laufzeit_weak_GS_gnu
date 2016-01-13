@@ -1,0 +1,19 @@
+set terminal pdfcairo colour enh size 15cm,10cm
+set output "WEAK_SCALING_GS_laufzeit.pdf"
+set title "Weak Scaling Gauss-Seidel"
+
+
+set xlabel "Anzahl der Prozesse"
+set ylabel "Laufzeit/Sekunden"
+set key center right
+
+set grid
+
+set logscale x 2
+set xtics auto nomirror
+set ytics auto nomirror
+
+set size 1,1
+set yrange[0:100]
+
+plot "WEAK_SCALING_GS.dat" using 1:4 w l lt rgb "blue" lw 3, "WEAK_SCALING_GS_run2.dat" using 1:4 w l lt rgb "green" lw 3 

@@ -1,0 +1,21 @@
+set terminal pdfcairo colour enh size 15cm,10cm
+set output 'STRONG_SCALING_JA_laufzeit.pdf
+set title "STRONG Scaling Jacobi"
+
+
+set xlabel "Anzahl der Prozesse"
+set ylabel "Laufzeit/Sekunden"
+set key center right
+
+set grid
+
+set logscale x 2
+set xtics auto nomirror
+set ytics auto nomirror
+
+set size 1,1
+set yrange[0:550]
+
+
+
+plot "STRONG_SCALING_JA.dat" using 1:4 w l lt rgb "blue" lw 3, "STRONG_SCALING_JA_run2.dat" using 1:4 w l lt rgb "green" lw 3 
