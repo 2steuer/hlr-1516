@@ -7,4 +7,4 @@
 \contentsline {subsection}{\numberline {2.2}Gau\IeC {\ss }-Seidel}{4}
 \contentsline {section}{\numberline {3}Kommunikation und Teilnutzung der Knoten}{5}
 \contentsline {subsection}{\numberline {3.1}Jacobi}{5}
-\contentsline {subsection}{\numberline {3.2}Gau\IeC {\ss }-Seidel}{5}
+\contentsline {subsection}{\numberline {3.2}Gau\IeC {\ss }-Seidel}{6}

@@ -17,6 +17,8 @@
 
 \begin{abstract}
 Es wurden die Leistungswerte und Laufzeiten der partdeff-par Implementierung getestet, welche von der Gruppe Koglin, Vosberg, Steuer zu Aufgabenblatt 9 abgegeben wurde. Es wurden außerdem zwei komplette Durchläufe zur Verifikation der Ergebnisse durchgeführt, daher sind in jedem Schaubild zwei Verläufe abgebildet.
+
+Eine erste allgemeine Betrachtung zeigt, dass unsere Jacobi-Implementierung deutlich schneller ist als die Gauß-Seidel Implementierung, welche etwas doppelt so lange Laufzeiten hat. 
 \end{abstract}
 
 \newpage
@@ -45,6 +47,7 @@ Wobei die Anzahl der genutzten Knoten stets $\frac{Anzahl Prozesse}{12}$ entspri
 
 \includegraphics[scale=0.8]{img/STRONG_SCALING_JA_laufzeit.pdf}
 
+Grundsätzlich ist hier bei steigender Prozesszahl ein schöner antiproportionaler Verlauf zu betrachten. Auch ein Blick in die Tabelle zeigt, dass unser Programm von 12-48 Prozessen gut skaliert, dies jedoch bei weiter steigender Prozesszahl abnimmt. Bei der Verdoppelung der Prozesse von 120 auf 240 gibt es gar eine Steigerung der Laufzeit um ca. 25\%. Hier steht die doppelt so große Prozesszahl der deutlich vermehrten Kommunikation entgegen, dies scheint auch den Vorteil des Hyperthreading zu verringern.
 
 \subsection{Gauß-Seidel}
 \begin{tabular}{|c|c|c|}
@@ -69,6 +72,8 @@ Wobei die Anzahl der genutzten Knoten stets $\frac{Anzahl Prozesse}{12}$ entspri
 
 \includegraphics[scale=0.8]{img/STRONG_SCALING_GS_laufzeit.pdf}
 
+Anders als die Implementation des Jacobi-Verfahrens skaliert das Gauß-Seidel-Verfahren auch beim letzten Verdoppelungsschritt von 120 auf 240 Prozesse. Allgemein ist hier ein besseres Skalierungsverhalten bis in größere Prozesszahlen zu beobachten. 
+
 \section{Weak Scaling}
 \subsection{Jacobi}
 \begin{tabular}{|c|c|c|c|c|}
@@ -92,6 +97,9 @@ Prozesse & Knoten & Interlines & Laufzeit in s & Laufzeit in s (2. Durchlauf) \\
 \end{tabular} 
 
 \includegraphics[scale=0.8]{img/WEAK_SCALING_JA_laufzeit.pdf}
+
+Die Implementation des Jacobi-Verfahrens schlägt sich im Weak-Scaling gut. Bei steigender Prozesszahl und proportionaler Vergrößerung des zu berechnenden Problems steigt die Berechnungszeit nur leicht an (ca. Faktor 1.5 zwischen kleinstem und größtem Problem). 
+
 \subsection{Gauß-Seidel}
 \begin{tabular}{|c|c|c|c|c|}
 \hline 
@@ -115,6 +123,8 @@ Prozesse & Knoten & Interlines & Laufzeit in s & Laufzeit in s (2. Durchlauf) \\
 
 \includegraphics[scale=0.8]{img/WEAK_SCALING_GS_laufzeit.pdf}
 
+Anders als im Jacobi-Verfahren skaliert die Implementation des Gauß-Seidel-Verfahrens nicht sonderlich gut. Bereits im ersten Schritt (verdoppelung der Problemgröße bei zwei Prozessen auf einem Knoten) beobachten wir eine Veroppelung der Laufzeit. Dies wird dadurch begründet sein, dass bei einem Prozess keinerlei Kommunikation statt findet, wobei bei zwei Prozessen die beiden Prozesse jeweils aufeinander warten müssen, bis sie weiter berechnen können, hierdurch entstehen natürlich Verzögerungen. Im weiteren Verlauf ist die Implementierung jedoch relativ stabil, lediglich bei sehr großen Problemgrößen bzw. Prozesszahlen steigt die Laufzeit wieder an.
+
 \section{Kommunikation und Teilnutzung der Knoten}
 \subsection{Jacobi}
 \begin{tabular}{|c|c|c|}
@@ -137,7 +147,12 @@ Knoten (je 10 Proz.) & Laufzeit in s & Laufzeit in s (2. Durchlauf) \\
 \hline 
 \end{tabular} 
 
+Mit je 200 Interlines.
+
 \includegraphics[scale=0.8]{img/COMMUNICATION_JA_laufzeit.pdf}
+
+Da wir in dieser Problemstellung eine fixe Anzahl an Prozessen haben, nämlich zehn, und die Anzahl der verwendeten Knoten stets erhöhen steigt mit jeder Erhöhung der Knotenzahl die Zeit, welche für die Kommunikation benötigt wird drastisch an, denn Kommunikation zwischen zwei Rechnern ist deutlich langsamer als zwischen zwei Prozessen auf einem Knoten. Zwar steigt die Laufzeit nicht proportional zur Anzahl der Prozesse, jedoch ist ein nahezu lineares Wachstum zu betrachten.
+
 \subsection{Gauß-Seidel}
 \begin{tabular}{|c|c|c|}
 \hline 
@@ -159,6 +174,10 @@ Knoten (je 10 Proz.) & Laufzeit in s & Laufzeit in s (2. Durchlauf) \\
 \hline 
 \end{tabular} 
 
+Mit je 200 Interlines.
+
 \includegraphics[scale=0.8]{img/COMMUNICATION_JA_laufzeit.pdf}
+
+Gleiches ist auch beim Gauß-Seidel-Verfahren zu beobachten. Der Verlauf ist aus den selben Gründen wie beim Jacobi-Verfahren diesem sehr ähnlich. 
 
 \end{document}
