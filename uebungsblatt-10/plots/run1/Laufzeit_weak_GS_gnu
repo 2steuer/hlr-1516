@@ -9,11 +9,11 @@ set key center right
 
 set grid
 
-set logscale x 2
+set nologscale
 set xtics auto nomirror
 set ytics auto nomirror
 
 set size 1,1
 set yrange[0:100]
 
-plot "WEAK_SCALING_GS.dat" using 1:4 w l lt rgb "blue" lw 3, "WEAK_SCALING_GS_run2.dat" using 1:4 w l lt rgb "green" lw 3 
+plot "WEAK_SCALING_GS.dat" using 1:4 w l lt rgb "blue" lw 3 title "Lauf 1", "WEAK_SCALING_GS_run2.dat" using 1:4 w l lt rgb "green" lw 3 title "Lauf 2"

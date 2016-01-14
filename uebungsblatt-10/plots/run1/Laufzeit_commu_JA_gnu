@@ -17,4 +17,4 @@ set yrange[0:70]
 set xrange[0:11]
 
 
-plot "COMMUNICATION_A_JA.dat" using 2:4 w l lt rgb "blue" lw 3, "COMMUNICATION_A_JA_run2.dat" using 2:4 w l lt rgb "green" lw 3 
+plot "COMMUNICATION_A_JA.dat" using 2:4 w l lt rgb "blue" lw 3 title "Lauf 1", "COMMUNICATION_A_JA_run2.dat" using 2:4 w l lt rgb "green" lw 3 title "Lauf 2"

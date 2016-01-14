@@ -1,0 +1,19 @@
+set terminal pdfcairo colour enh size 15cm,10cm
+set output "WEAK_SCALING_GS_efficiency.pdf"
+set title "Weak Scaling Gauss-Seidel Efficiency \n(Die Laufzeit von Prozessanzahl = 1 entspricht 100%)\n Berechnung mit t1/tN"
+
+
+set xlabel "Anzahl der Prozesse"
+set ylabel "Effizienz in Prozent"
+set key top right
+
+set grid
+
+set nologscale
+set xtics auto nomirror
+set ytics auto nomirror
+
+
+set yrange[0:105]
+
+plot "WEAK_SCALING_GS.dat" using 1:((37.4324/$4)*100) w l lt rgb "blue" lw 3 title "Lauf 1", "WEAK_SCALING_GS_run2.dat" using 1:((37.3106/$4)*100) w l lt rgb "green" lw 3 title "Lauf 2"

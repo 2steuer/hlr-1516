@@ -1,0 +1,19 @@
+set terminal pdfcairo colour enh size 15cm,10cm
+set output "COMMUNICATION_GS_efficiency.pdf"
+set title "COMMUNICATION Gauss-Seidel Efficiency bei 10 Prozessen\n(Die Laufzeit von Knotenanzahl = 1 entspricht 100%)\n Berechnung mit t1/tN"
+
+
+set xlabel "Anzahl der Knoten"
+set ylabel "Effizienz in Prozent"
+set key top right
+
+set grid
+
+set nologscale
+set xtics auto nomirror
+set ytics auto nomirror
+
+
+set yrange[0:150]
+
+plot "COMMUNICATION_A_GS.dat" using 2:((44.9973/$4)*100) w l lt rgb "blue" lw 3 title "Lauf 1", "COMMUNICATION_A_GS_run2.dat" using 2:((45.1390/$4)*100) w l lt rgb "green" lw 3 title "Lauf 2"

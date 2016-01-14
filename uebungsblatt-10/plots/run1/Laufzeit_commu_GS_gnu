@@ -5,7 +5,7 @@ set title "COMMUNICATION Gauss-Seidel"
 
 set xlabel "Anzahl der Knoten (10 Prozesse)"
 set ylabel "Laufzeit/Sekunden"
-set key top right
+set key bot right
 
 set grid
 
@@ -15,4 +15,4 @@ set ytics auto nomirror
 set yrange[0:90]
 set xrange[0:11]
 
-plot "COMMUNICATION_A_GS.dat" using 2:4 w l lt rgb "blue" lw 3, "COMMUNICATION_A_GS_run2.dat" using 2:4 w l lt rgb "green" lw 3 
+plot "COMMUNICATION_A_GS.dat" using 2:4 w l lt rgb "blue" lw 3 title "Lauf 1", "COMMUNICATION_A_GS_run2.dat" using 2:4 w l lt rgb "green" lw 3 title "Lauf 2"

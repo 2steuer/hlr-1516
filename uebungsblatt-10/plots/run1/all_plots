@@ -4,7 +4,14 @@
         	load "Laufzeit_weak_GS_gnu"
         	load "Laufzeit_strong_JA_gnu"
         	load "Laufzeit_strong_GS_gnu"
+        	load "Efficiency_weak_JA_gnu"
+        	load "Efficiency_weak_GS_gnu"
+        	load "Efficiency_strong_JA_gnu"
+        	load "Efficiency_strong_GS_gnu"
         	load "Laufzeit_commu_JA_gnu"
         	load "Laufzeit_commu_GS_gnu"
+        	load "Efficiency_commnunication_GS_gnu"
+        	load "Efficiency_commnunication_JA_gnu"
+
         	exit
 EOF

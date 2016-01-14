@@ -1,0 +1,19 @@
+set terminal pdfcairo colour enh size 15cm,10cm
+set output "STRONG_SCALING_JA_efficiency.pdf"
+set title "STRONG Scaling Jacobi Efficiency \n(Die Laufzeit von Prozessanzahl = 12 entspricht 100%)\n Berechnung mit t1/(N*tN)"
+
+
+set xlabel "Anzahl der Prozesse"
+set ylabel "Effizienz in Prozent"
+set key center right
+
+set grid
+
+set nologscale
+set xtics auto nomirror
+set ytics auto nomirror
+
+set size 1,1
+set yrange[0:105]
+
+plot "STRONG_SCALING_JA.dat" using 1:((250.4008/(($1/12)*$4))*100) w l lt rgb "blue" lw 3 title "Lauf 1", "STRONG_SCALING_JA_run2.dat" using 1:((246.8505/(($1/12)*$4))*100) w l lt rgb "green" lw 3 title "Lauf 2"
