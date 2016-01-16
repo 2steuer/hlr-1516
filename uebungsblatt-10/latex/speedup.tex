@@ -49,6 +49,12 @@ Wobei die Anzahl der genutzten Knoten stets $\frac{Anzahl Prozesse}{12}$ entspri
 
 Grundsätzlich ist hier bei steigender Prozesszahl ein schöner antiproportionaler Verlauf zu betrachten. Auch ein Blick in die Tabelle zeigt, dass unser Programm von 12-48 Prozessen gut skaliert, dies jedoch bei weiter steigender Prozesszahl abnimmt. Bei der Verdoppelung der Prozesse von 120 auf 240 gibt es gar eine Steigerung der Laufzeit um ca. 25\%. Hier steht die doppelt so große Prozesszahl der deutlich vermehrten Kommunikation entgegen, dies scheint auch den Vorteil des Hyperthreading zu verringern.
 
+Bestätigt wird diese Beobachtung durch die Betrachtung der Effizienz:
+
+\includegraphics[scale=0.8]{img/STRONG_SCALING_JA_efficiency.pdf}
+
+Die Effizienz der Jacobi-Implementation sinkt nahezu linear mit steigender Prozesszahl.
+
 \subsection{Gauß-Seidel}
 \begin{tabular}{|c|c|c|}
 \hline 
@@ -74,6 +80,10 @@ Wobei die Anzahl der genutzten Knoten stets $\frac{Anzahl Prozesse}{12}$ entspri
 
 Anders als die Implementation des Jacobi-Verfahrens skaliert das Gauß-Seidel-Verfahren auch beim letzten Verdoppelungsschritt von 120 auf 240 Prozesse. Allgemein ist hier ein besseres Skalierungsverhalten bis in größere Prozesszahlen zu beobachten. 
 
+\includegraphics[scale=0.8]{img/STRONG_SCALING_GS_efficiency.pdf}
+
+Auch hier betrachten wir durch die Faktoren wie nicht genutzte Wartezeiten in der Pipeline oder Latenzen in der Kommunikation einen nahezu linearen Abfall der Effizienz. Jedoch ist dieser nicht so stark wie beim Jacobi-Verfahren, entsprechend ist das Gauß-Seidel-Verfahren im \textit{strong scaling} effizienter implementiert.
+
 \section{Weak Scaling}
 \subsection{Jacobi}
 \begin{tabular}{|c|c|c|c|c|}
@@ -98,7 +108,11 @@ Prozesse & Knoten & Interlines & Laufzeit in s & Laufzeit in s (2. Durchlauf) \\
 
 \includegraphics[scale=0.8]{img/WEAK_SCALING_JA_laufzeit.pdf}
 
-Die Implementation des Jacobi-Verfahrens schlägt sich im Weak-Scaling gut. Bei steigender Prozesszahl und proportionaler Vergrößerung des zu berechnenden Problems steigt die Berechnungszeit nur leicht an (ca. Faktor 1.5 zwischen kleinstem und größtem Problem). 
+Die Implementation des Jacobi-Verfahrens schlägt sich im Weak-Scaling gut. Bei steigender Prozesszahl und proportionaler Vergrößerung des zu berechnenden Problems steigt die Berechnungszeit nur leicht nahezu linear an (ca. Faktor 1.5 zwischen kleinstem und größtem Problem). 
+
+\includegraphics[scale=0.8]{img/WEAK_SCALING_JA_efficiency.pdf}
+
+Wie auch schon in obigem Schaubild ersichtlich ist die Implementierung des \textit{weak scaling} im Jacobi-Verfahren effizienter als im \textit{strong scaling}. Zwar verliert man in kleineren Prozesszahlen etwas Effizienz, später jedoch sinkt diese deutlich flacher ab als beim \textit{strong scaling}.
 
 \subsection{Gauß-Seidel}
 \begin{tabular}{|c|c|c|c|c|}
@@ -124,6 +138,10 @@ Prozesse & Knoten & Interlines & Laufzeit in s & Laufzeit in s (2. Durchlauf) \\
 \includegraphics[scale=0.8]{img/WEAK_SCALING_GS_laufzeit.pdf}
 
 Anders als im Jacobi-Verfahren skaliert die Implementation des Gauß-Seidel-Verfahrens nicht sonderlich gut. Bereits im ersten Schritt (verdoppelung der Problemgröße bei zwei Prozessen auf einem Knoten) beobachten wir eine Veroppelung der Laufzeit. Dies wird dadurch begründet sein, dass bei einem Prozess keinerlei Kommunikation statt findet, wobei bei zwei Prozessen die beiden Prozesse jeweils aufeinander warten müssen, bis sie weiter berechnen können, hierdurch entstehen natürlich Verzögerungen. Im weiteren Verlauf ist die Implementierung jedoch relativ stabil, lediglich bei sehr großen Problemgrößen bzw. Prozesszahlen steigt die Laufzeit wieder an.
+
+\includegraphics[scale=0.8]{img/WEAK_SCALING_GS_efficiency.pdf}
+
+Obige Ergebnisse spiegeln sich auch schön hier wieder, ab 2 Prozessen ist die Effizienz nahezu konstant bei 40-50\%.
 
 \section{Kommunikation und Teilnutzung der Knoten}
 \subsection{Jacobi}
@@ -153,6 +171,10 @@ Mit je 200 Interlines.
 
 Da wir in dieser Problemstellung eine fixe Anzahl an Prozessen haben, nämlich zehn, und die Anzahl der verwendeten Knoten stets erhöhen steigt mit jeder Erhöhung der Knotenzahl die Zeit, welche für die Kommunikation benötigt wird drastisch an, denn Kommunikation zwischen zwei Rechnern ist deutlich langsamer als zwischen zwei Prozessen auf einem Knoten. Zwar steigt die Laufzeit nicht proportional zur Anzahl der Prozesse, jedoch ist ein nahezu lineares Wachstum zu betrachten.
 
+\includegraphics[scale=0.8]{img/COMMUNICATION_JA_efficiency.pdf}
+
+Besser als in der Laufzeit-Darstellung ist hier die starke Abweichung des ersten Laufs zu betrachten, welche zunächst sogar Effizienz von über 100\% erreicht. Oben ist dies ebenfalls zu beobachten, denn die Laufzeit sinkt unter die der Durchführung mit 1 Prozess. Wirklich erklären können wir uns diesen Effekt jedoch nicht, zumal der zweite Durchlauf sich wie erwartet mit stets sinkender Effizienz verhält.
+
 \subsection{Gauß-Seidel}
 \begin{tabular}{|c|c|c|}
 \hline 
@@ -176,8 +198,10 @@ Knoten (je 10 Proz.) & Laufzeit in s & Laufzeit in s (2. Durchlauf) \\
 
 Mit je 200 Interlines.
 
-\includegraphics[scale=0.8]{img/COMMUNICATION_JA_laufzeit.pdf}
+\includegraphics[scale=0.8]{img/COMMUNICATION_GS_laufzeit.pdf}
 
-Gleiches ist auch beim Gauß-Seidel-Verfahren zu beobachten. Der Verlauf ist aus den selben Gründen wie beim Jacobi-Verfahren diesem sehr ähnlich. 
+Das Gauß-Seidel Verfahren scheint hier jedoch von der Implementierung zu profitieren. Die Laufzeit steigt im Verlauf nicht allzu stark an, lediglich wenn nur 1 Prozess auf jedem Knoten läuft betrachten wir noch mal einen starken Sprung in Laufzeit und Effizienz nach oben bzw. nach unten. Womöglich liegt dies daran, dass die Kommunikations-Latenz gegenüber den Verzögerungen in der Pipeline nicht mehr so stark ins Gewicht fällt.
+
+\includegraphics[scale=0.8]{img/COMMUNICATION_GS_efficiency.pdf}
 
 \end{document}

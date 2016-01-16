@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.9.2)  14 JAN 2016 18:08
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.9.2)  16 JAN 2016 12:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -465,92 +465,181 @@ Overfull \hbox (11.27545pt too wide) in paragraph at lines 48--49
 [][] 
  []
 
+<img/STRONG_SCALING_JA_efficiency.pdf, id=14, 426.59375pt x 284.06125pt>
+File: img/STRONG_SCALING_JA_efficiency.pdf Graphic file (type pdf)
+
+<use img/STRONG_SCALING_JA_efficiency.pdf>
+Package pdftex.def Info: img/STRONG_SCALING_JA_efficiency.pdf used on input lin
+e 54.
+(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
+
+Overfull \hbox (11.27545pt too wide) in paragraph at lines 54--55
+[][] 
+ []
+
 [2 <./img/STRONG_SCALING_JA_laufzeit.pdf>]
-<img/STRONG_SCALING_GS_laufzeit.pdf, id=27, 426.59375pt x 284.06125pt>
+<img/STRONG_SCALING_GS_laufzeit.pdf, id=28, 426.59375pt x 284.06125pt>
 File: img/STRONG_SCALING_GS_laufzeit.pdf Graphic file (type pdf)
 
 <use img/STRONG_SCALING_GS_laufzeit.pdf>
 Package pdftex.def Info: img/STRONG_SCALING_GS_laufzeit.pdf used on input line 
-73.
-(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
-
-Overfull \hbox (11.27545pt too wide) in paragraph at lines 73--74
-[][] 
- []
-
-<img/WEAK_SCALING_JA_laufzeit.pdf, id=28, 426.59375pt x 284.06125pt>
-File: img/WEAK_SCALING_JA_laufzeit.pdf Graphic file (type pdf)
-
-<use img/WEAK_SCALING_JA_laufzeit.pdf>
-Package pdftex.def Info: img/WEAK_SCALING_JA_laufzeit.pdf used on input line 99
-.
-(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
-
-Overfull \hbox (11.27545pt too wide) in paragraph at lines 99--100
-[][] 
- []
-
-[3 <./img/STRONG_SCALING_GS_laufzeit.pdf>]
-<img/WEAK_SCALING_GS_laufzeit.pdf, id=40, 426.59375pt x 284.06125pt>
-File: img/WEAK_SCALING_GS_laufzeit.pdf Graphic file (type pdf)
-
-<use img/WEAK_SCALING_GS_laufzeit.pdf>
-Package pdftex.def Info: img/WEAK_SCALING_GS_laufzeit.pdf used on input line 12
-4.
-(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
-
-Overfull \hbox (11.27545pt too wide) in paragraph at lines 124--125
-[][] 
- []
-
-[4 <./img/WEAK_SCALING_JA_laufzeit.pdf>]
-<img/COMMUNICATION_JA_laufzeit.pdf, id=52, 426.59375pt x 284.06125pt>
-File: img/COMMUNICATION_JA_laufzeit.pdf Graphic file (type pdf)
-
-<use img/COMMUNICATION_JA_laufzeit.pdf>
-Package pdftex.def Info: img/COMMUNICATION_JA_laufzeit.pdf used on input line 1
-52.
-(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
-
-Overfull \hbox (11.27545pt too wide) in paragraph at lines 152--153
-[][] 
- []
-
-[5 <./img/WEAK_SCALING_GS_laufzeit.pdf>]
-File: img/COMMUNICATION_JA_laufzeit.pdf Graphic file (type pdf)
-
-<use img/COMMUNICATION_JA_laufzeit.pdf>
-Package pdftex.def Info: img/COMMUNICATION_JA_laufzeit.pdf used on input line 1
 79.
 (pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
 
-Overfull \hbox (11.27545pt too wide) in paragraph at lines 179--180
+Overfull \hbox (11.27545pt too wide) in paragraph at lines 79--80
 [][] 
  []
 
-[6 <./img/COMMUNICATION_JA_laufzeit.pdf>] [7] (./speedup.aux) ) 
+[3 <./img/STRONG_SCALING_JA_efficiency.pdf>]
+<img/STRONG_SCALING_GS_efficiency.pdf, id=47, 426.59375pt x 284.06125pt>
+File: img/STRONG_SCALING_GS_efficiency.pdf Graphic file (type pdf)
+
+<use img/STRONG_SCALING_GS_efficiency.pdf>
+Package pdftex.def Info: img/STRONG_SCALING_GS_efficiency.pdf used on input lin
+e 83.
+(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
+
+Overfull \hbox (11.27545pt too wide) in paragraph at lines 83--84
+[][] 
+ []
+
+[4 <./img/STRONG_SCALING_GS_laufzeit.pdf> <./img/STRONG_SCALING_GS_efficiency.p
+df
+
+pdfTeX warning: pdflatex (file ./img/STRONG_SCALING_GS_efficiency.pdf): PDF inc
+lusion: multiple pdfs with page group included in a single page
+>] <img/WEAK_SCALING_JA_laufzeit.pdf, id=74, 426.59375pt x 284.06125pt>
+File: img/WEAK_SCALING_JA_laufzeit.pdf Graphic file (type pdf)
+
+<use img/WEAK_SCALING_JA_laufzeit.pdf>
+Package pdftex.def Info: img/WEAK_SCALING_JA_laufzeit.pdf used on input line 10
+9.
+(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
+
+Overfull \hbox (11.27545pt too wide) in paragraph at lines 109--110
+[][] 
+ []
+
+<img/WEAK_SCALING_JA_efficiency.pdf, id=75, 426.59375pt x 284.06125pt>
+File: img/WEAK_SCALING_JA_efficiency.pdf Graphic file (type pdf)
+
+<use img/WEAK_SCALING_JA_efficiency.pdf>
+Package pdftex.def Info: img/WEAK_SCALING_JA_efficiency.pdf used on input line 
+113.
+(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
+
+Overfull \hbox (11.27545pt too wide) in paragraph at lines 113--114
+[][] 
+ []
+
+[5 <./img/WEAK_SCALING_JA_laufzeit.pdf>]
+<img/WEAK_SCALING_GS_laufzeit.pdf, id=87, 426.59375pt x 284.06125pt>
+File: img/WEAK_SCALING_GS_laufzeit.pdf Graphic file (type pdf)
+
+<use img/WEAK_SCALING_GS_laufzeit.pdf>
+Package pdftex.def Info: img/WEAK_SCALING_GS_laufzeit.pdf used on input line 13
+8.
+(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
+
+Overfull \hbox (11.27545pt too wide) in paragraph at lines 138--139
+[][] 
+ []
+
+[6 <./img/WEAK_SCALING_JA_efficiency.pdf>]
+<img/WEAK_SCALING_GS_efficiency.pdf, id=106, 426.59375pt x 284.06125pt>
+File: img/WEAK_SCALING_GS_efficiency.pdf Graphic file (type pdf)
+
+<use img/WEAK_SCALING_GS_efficiency.pdf>
+Package pdftex.def Info: img/WEAK_SCALING_GS_efficiency.pdf used on input line 
+142.
+(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
+
+Overfull \hbox (11.27545pt too wide) in paragraph at lines 142--143
+[][] 
+ []
+
+[7 <./img/WEAK_SCALING_GS_laufzeit.pdf> <./img/WEAK_SCALING_GS_efficiency.pdf
+
+pdfTeX warning: pdflatex (file ./img/WEAK_SCALING_GS_efficiency.pdf): PDF inclu
+sion: multiple pdfs with page group included in a single page
+>] <img/COMMUNICATION_JA_laufzeit.pdf, id=133, 426.59375pt x 284.06125pt>
+File: img/COMMUNICATION_JA_laufzeit.pdf Graphic file (type pdf)
+
+<use img/COMMUNICATION_JA_laufzeit.pdf>
+Package pdftex.def Info: img/COMMUNICATION_JA_laufzeit.pdf used on input line 1
+70.
+(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
+
+Overfull \hbox (11.27545pt too wide) in paragraph at lines 170--171
+[][] 
+ []
+
+<img/COMMUNICATION_JA_efficiency.pdf, id=134, 426.59375pt x 284.06125pt>
+File: img/COMMUNICATION_JA_efficiency.pdf Graphic file (type pdf)
+
+<use img/COMMUNICATION_JA_efficiency.pdf>
+Package pdftex.def Info: img/COMMUNICATION_JA_efficiency.pdf used on input line
+ 174.
+(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
+
+Overfull \hbox (11.27545pt too wide) in paragraph at lines 174--175
+[][] 
+ []
+
+[8 <./img/COMMUNICATION_JA_laufzeit.pdf>]
+<img/COMMUNICATION_GS_laufzeit.pdf, id=146, 426.59375pt x 284.06125pt>
+File: img/COMMUNICATION_GS_laufzeit.pdf Graphic file (type pdf)
+
+<use img/COMMUNICATION_GS_laufzeit.pdf>
+Package pdftex.def Info: img/COMMUNICATION_GS_laufzeit.pdf used on input line 2
+01.
+(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
+
+Overfull \hbox (11.27545pt too wide) in paragraph at lines 201--202
+[][] 
+ []
+
+[9 <./img/COMMUNICATION_JA_efficiency.pdf>]
+<img/COMMUNICATION_GS_efficiency.pdf, id=166, 426.59375pt x 284.06125pt>
+File: img/COMMUNICATION_GS_efficiency.pdf Graphic file (type pdf)
+
+<use img/COMMUNICATION_GS_efficiency.pdf>
+Package pdftex.def Info: img/COMMUNICATION_GS_efficiency.pdf used on input line
+ 205.
+(pdftex.def)             Requested size: 341.27545pt x 227.24928pt.
+
+Overfull \hbox (11.27545pt too wide) in paragraph at lines 205--206
+[][] 
+ []
+
+[10 <./img/COMMUNICATION_GS_laufzeit.pdf> <./img/COMMUNICATION_GS_efficiency.pd
+f
+
+pdfTeX warning: pdflatex (file ./img/COMMUNICATION_GS_efficiency.pdf): PDF incl
+usion: multiple pdfs with page group included in a single page
+>] (./speedup.aux) ) 
 Here is how much of TeX's memory you used:
- 3072 strings out of 493304
- 39749 string characters out of 6139872
- 105694 words of memory out of 5000000
- 6466 multiletter control sequences out of 15000+600000
- 12110 words of font info for 47 fonts, out of 8000000 for 9000
+ 3109 strings out of 493304
+ 41090 string characters out of 6139872
+ 104694 words of memory out of 5000000
+ 6495 multiletter control sequences out of 15000+600000
+ 12456 words of font info for 48 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  37i,6n,24p,697b,201s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/texl
-ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texlive/texmf-dist/font
-s/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1
-/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb>
-
-Output written on speedup.pdf (7 pages, 169012 bytes).
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmb
+x12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb
+></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/t
+exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/font
+s/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmti10.pfb>
+Output written on speedup.pdf (10 pages, 266649 bytes).
 PDF statistics:
- 109 PDF objects out of 1000 (max. 8388607)
- 75 compressed objects within 1 object stream
+ 225 PDF objects out of 1000 (max. 8388607)
+ 153 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
- 26 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 61 words of extra memory for PDF output out of 10000 (max. 10000000)
 

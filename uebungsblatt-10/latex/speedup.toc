@@ -1,10 +1,10 @@
 \select@language {german}
 \contentsline {section}{\numberline {1}Strong Scaling}{2}
 \contentsline {subsection}{\numberline {1.1}Jacobi}{2}
-\contentsline {subsection}{\numberline {1.2}Gau\IeC {\ss }-Seidel}{2}
-\contentsline {section}{\numberline {2}Weak Scaling}{3}
-\contentsline {subsection}{\numberline {2.1}Jacobi}{3}
-\contentsline {subsection}{\numberline {2.2}Gau\IeC {\ss }-Seidel}{4}
-\contentsline {section}{\numberline {3}Kommunikation und Teilnutzung der Knoten}{5}
-\contentsline {subsection}{\numberline {3.1}Jacobi}{5}
-\contentsline {subsection}{\numberline {3.2}Gau\IeC {\ss }-Seidel}{6}
+\contentsline {subsection}{\numberline {1.2}Gau\IeC {\ss }-Seidel}{3}
+\contentsline {section}{\numberline {2}Weak Scaling}{5}
+\contentsline {subsection}{\numberline {2.1}Jacobi}{5}
+\contentsline {subsection}{\numberline {2.2}Gau\IeC {\ss }-Seidel}{6}
+\contentsline {section}{\numberline {3}Kommunikation und Teilnutzung der Knoten}{8}
+\contentsline {subsection}{\numberline {3.1}Jacobi}{8}
+\contentsline {subsection}{\numberline {3.2}Gau\IeC {\ss }-Seidel}{9}
